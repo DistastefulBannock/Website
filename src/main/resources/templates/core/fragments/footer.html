@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<div th:fragment="footer">
+    <div id="copyright">
+        <span th:if="!${#dates.format(#dates.createNow(), 'yyyy').toString().equals('2024')}">
+            © 2024 - [[${#dates.format(#dates.createNow(), 'yyyy')}]] DistastefulBannock
+        </span>
+        <span th:unless="!${#dates.format(#dates.createNow(), 'yyyy').toString().equals('2024')}">
+            © 2024 DistastefulBannock
+        </span>
+    </div>
+</div>
+</body>
+</html>

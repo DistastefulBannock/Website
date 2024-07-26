@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+body{
+    background: var(--surface);
+    width: 800px;
+    margin: 0 auto;
+    color: var(--tertiary);
+}
+
+h1,h2,h3{
+    font-family: "Arvo", serif;
+    font-weight: 400;
+    font-style: normal;
+}

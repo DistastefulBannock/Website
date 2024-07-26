@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&display=swap');
+
+#headerImage{
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#fakeImageMapLinksParent{
+    position: relative;
+    color: var(--tertiary);
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    vertical-align: top;
+    top: -175px;
+}
+
+.fakeImageMapText{
+    display: inline;
+    position: absolute;
+    color: var(--secondary);
+    margin: 0;
+    padding: 0.25em 0.25em 0.27em 0.27em;
+    vertical-align: top;
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-stretch: expanded;
+    font-style: italic;
+    font-size: 1.4em;
+    pointer-events: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
