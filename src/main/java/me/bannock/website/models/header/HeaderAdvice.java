@@ -26,6 +26,8 @@ public class HeaderAdvice {
         if (principal == null)
             headerLinks.add(new HeaderLink("Login", "/core/login", 58, 40));
         headerLinks.add(new HeaderLink("The ramblings", "/blog/", 132, 40));
+        headerLinks.add(new HeaderLink("Source code", "https://github.com/DistastefulBannock/Website",
+                116, 41));
 
         Map<HeaderLink, Integer[]> headerLinksToPositions = new HashMap<>();
         int headerWidth = 800;
