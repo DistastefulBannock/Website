@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class HibernateBlogServiceImpl implements BlogService {
@@ -41,13 +42,41 @@ public class HibernateBlogServiceImpl implements BlogService {
     private boolean commentPostingEnabled;
 
     @Override
+    @Transactional(readOnly = true)
     public Post getPost(long postId) throws BlogServiceException {
-        return null;
+        PostEntity post = getPostEntity(postId);
+        logger.info("Found post with post id, postId={}", postId);
+        return toDto(post);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public InputStream getIndex(long postId) throws BlogServiceException {
+        PostEntity post = getPostEntity(postId);
+        InputStream indexInputStream;
+        try {
+            indexInputStream = storageService.load(getStorageCategoryForPost(postId), post.getIndexPath());
+        } catch (IOException e) {
+            logger.error("Failed to load blog post index, postId={}", postId);
+            throw new RuntimeException(e);
+        }
+        return indexInputStream;
     }
 
     @Override
     public InputStream getAsset(long postId, String assetPath) throws BlogServiceException {
-        return null;
+        if (!postRepository.existsById(postId)){
+            logger.warn("Could not get post asset because post does not exist, postId={}", postId);
+            throw new BlogServiceException("Post does not exist");
+        }
+        InputStream assetInputStream;
+        try {
+            assetInputStream = storageService.load(getStorageCategoryForPostAssets(postId), assetPath);
+        } catch (IOException e) {
+            logger.error("Failed to load blog post asset, postId={}, assetPath={}", postId, assetPath);
+            throw new RuntimeException(e);
+        }
+        return assetInputStream;
     }
 
     @Override
@@ -57,14 +86,19 @@ public class HibernateBlogServiceImpl implements BlogService {
         Objects.requireNonNull(index);
         if (assets == null)
             assets = new Asset[0];
-        if (titleHtml.length() > 256)
+        if (titleHtml.length() > 256){
+            logger.warn("Failed to create new blog post because title length is more than 256 " +
+                    "characters long, authorId={} title=\"{}\"", authorId, titleHtml);
             throw new BlogServiceException("Title html must not be more than 256 characters long");
+        }
 
         if (!persistOriginalFileNames){
             replaceAssetFileNames(assets);
             Asset[] indexArray = new Asset[]{index};
             replaceAssetFileNames(indexArray);
             index = indexArray[0];
+            logger.info("Persist original file names are disabled, so all files names submitted " +
+                    "have been remapped. Content of the files have remained unchanged, authorId={}", authorId);
         }
 
         PostEntity post = new PostEntity(
@@ -77,25 +111,46 @@ public class HibernateBlogServiceImpl implements BlogService {
         try {
             String postStorageCategory = getStorageCategoryForPost(post.getPostId());
             storageService.save(index.data(), postStorageCategory, index.name());
+            logger.info("Saved blog post index, postId={}, indexPath=\"{}\"", post.getPostId(), index.name());
 
             String assetsStorageCategory = getStorageCategoryForPostAssets(post.getPostId());
-            for (Asset asset : assets)
+            for (Asset asset : assets) {
                 storageService.save(asset.data(), assetsStorageCategory, asset.name());
+                logger.info("Saved blog post asset, postId={}, assetPath=\"{}\"", post.getPostId(), asset.name());
+            }
         } catch (IOException e) {
+            logger.warn("Failed to create new blog post, authorId={}", authorId, e);
             throw new RuntimeException(e);
         }
 
-        return null;
+        logger.info("User created new blog post, authorId={}, postId={}", authorId, post.getPostId());
+
+        return toDto(post);
     }
 
     @Override
     public Comment[] getComments(long postId, int page) throws BlogServiceException {
-        return new Comment[0];
+        return new Comment[0]; // TODO
     }
 
     @Override
     public Comment makeComment(long postId, long commentAuthorId, String content) throws BlogServiceException {
-        return null;
+        return null; // TODO
+    }
+
+    /**
+     * Gets a post entity with a given post id. Caller method must have transactional; This method only reads
+     * @param postId The post id to get the post with
+     * @return The post entity
+     * @throws BlogServiceException If the post entity was not found; also logs a warning
+     */
+    private PostEntity getPostEntity(long postId) throws BlogServiceException {
+        Optional<PostEntity> post = postRepository.findById(postId);
+        if (post.isEmpty()) {
+            logger.warn("Could not find post using provided id, postId={}", postId);
+            throw new BlogServiceException("Post not found for given id");
+        }
+        return post.get();
     }
 
     /**
@@ -143,6 +198,21 @@ public class HibernateBlogServiceImpl implements BlogService {
             index /= radix;
         }while(index > 0);
         return nameBuilder.toString();
+    }
+
+    /**
+     * Converts a post entity to its DTO equivalent
+     * @param entity The entity to convert
+     * @return The dto equivalent
+     */
+    private Post toDto(PostEntity entity){
+        return new Post(
+                entity.getPostId(),
+                entity.getTitleHtml(),
+                entity.getAuthorId(),
+                entity.getMillisPosted(),
+                entity.getAssetPaths().toArray(new String[0])
+        );
     }
 
 }

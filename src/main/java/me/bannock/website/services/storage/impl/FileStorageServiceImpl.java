@@ -65,14 +65,47 @@ public class FileStorageServiceImpl implements StorageService {
     }
 
     /**
-     * @param identifier The identifier for the file we're mapping
-     * @return The
+     * @param category The category for the file we're getting. Do not pass in user supplied  values
+     * @param identifier The identifier for the file we're mapping. Could be a user supplied value
+     * @return The file
+     * @throws IllegalArgumentException if the identifier does not pass validations
      */
     private File toFile(String category, String identifier){
         Objects.requireNonNull(category);
         Objects.requireNonNull(identifier);
-        String filePath = "%s/%s".formatted(category, identifier);
-        return new File(applicationDir, filePath);
+
+        if (new File(identifier).isAbsolute())
+            throw new IllegalArgumentException("Identifier must not match to an absolute path");
+
+        // We move the directories found in the identifier's path to the category's so our directory
+        // traversal validation fails if the resulting file is outside the directory the intended file is located in
+        StringBuilder identifierPathBuilder = new StringBuilder();
+        String[] identifierPathParts = identifier.split("[\\\\/]");
+        int pathIndex = 0;
+        for (pathIndex = 0; pathIndex < identifierPathParts.length - 1; pathIndex++){
+            identifierPathBuilder
+                    .append(identifierPathBuilder.isEmpty() ? "" : "/")
+                    .append(identifierPathParts[pathIndex]);
+        }
+        identifier = identifierPathParts[pathIndex];
+        category = "%s/%s".formatted(category, identifierPathBuilder.toString());
+
+        File categoryDir = new File(applicationDir, "%s/".formatted(category));
+        File file = new File(categoryDir, identifier);
+        try {
+            String canonicalPath = file.getCanonicalPath();
+            if (!canonicalPath.startsWith(categoryDir.getAbsolutePath())){
+                logger.warn("File was not supplied because a path traversal attempt was detected, " +
+                        "innerScopeCategory={}, innerScopeId={}, pathTraversedTo={}", category, identifier,canonicalPath);
+                throw new IllegalArgumentException("Invalid file identifier. Please try again later.");
+            }
+        } catch (IOException e) {
+            logger.warn("Something went wrong while doing path traversal validations, " +
+                    "category={}, id={}", category, identifier);
+            throw new RuntimeException(e);
+        }
+
+        return file;
     }
 
 }

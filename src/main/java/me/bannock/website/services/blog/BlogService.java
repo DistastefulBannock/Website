@@ -16,6 +16,15 @@ public interface BlogService {
     Post getPost(long postId) throws BlogServiceException;
 
     /**
+     * Gets a steam of data for a given post's index file; the one shown by default when the post is displayed
+     * @param postId The post id the index is for
+     * @return An input stream containing the data for the asset
+     * @throws BlogServiceException If something goes wrong while getting the asset
+     */
+    @Secured(Roles.BlogServiceRoles.READ_POSTS)
+    InputStream getIndex(long postId) throws BlogServiceException;
+
+    /**
      * Gets a steam of data for a given asset
      * @param postId The post id the asset is related to
      * @param assetPath The path to the asset

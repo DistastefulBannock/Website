@@ -121,4 +121,17 @@ public class PostEntity {
         this.deleted = deleted;
     }
 
+    @Override
+    public String toString() {
+        return "PostEntity{" +
+                "postId=" + postId +
+                ", authorId=" + authorId +
+                ", millisPosted=" + millisPosted +
+                ", titleHtml='" + titleHtml + '\'' +
+                ", indexPath='" + indexPath + '\'' +
+                ", assetPaths=" + assetPaths +
+                ", deleted=" + deleted +
+                '}';
+    }
+
 }

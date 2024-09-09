@@ -1,9 +1,11 @@
 package me.bannock.website.services.storage.impl;
 
+import me.bannock.website.security.Roles;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -35,8 +37,11 @@ class FileStorageServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "test", authorities = {
+            Roles.StorageServiceRoles.SAVE_DATA, Roles.StorageServiceRoles.LOAD_DATA
+    })
     void saveAndLoadGlunggiOfDifferentSize(){
-            assertDoesNotThrow(() -> {
+        assertDoesNotThrow(() -> {
             for (int i = 0; i <= 30; i++){ // Writes files as large as 1gb
                 // Create glunggus with random data and save.
                 // Stores the old data, so we can verify the data is good later
@@ -58,6 +63,16 @@ class FileStorageServiceImplTest {
                 assertArrayEquals(dataBytes, glunggusData.toByteArray());
             }
         });
+    }
+
+    @Test
+    @WithMockUser(username = "test", authorities = {
+            Roles.StorageServiceRoles.SAVE_DATA
+    })
+    void attemptSaveDataWithDirectoryTraversalPath(){
+        String category = "test";
+        String id /* id is the only var that can be user supplied */ = "../..\\test.png";
+        assertThrows(IllegalArgumentException.class, () -> storageService.save(new ByteArrayInputStream(new byte[1]), category, id));
     }
 
 }
