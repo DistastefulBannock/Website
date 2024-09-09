@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Entity
-@Table(name = "users", indexes = {
+@Table(name = "core_users", indexes = {
         @Index(columnList = "id", unique = true),
         @Index(columnList = "name", unique = true),
         @Index(columnList = "email", unique = true)
@@ -68,8 +68,8 @@ public class UserEntity implements Serializable {
 
     @Id
     @Column(name = "id", unique = true, nullable = false)
-    @SequenceGenerator(name = "uid_seq", sequenceName = "uid_seq", initialValue = 0, allocationSize = 1)
-    @GeneratedValue
+    @SequenceGenerator(name = "core_uid_seq", sequenceName = "core_uid_seq", initialValue = 0, allocationSize = 1)
+    @GeneratedValue(generator = "core_uid_seq")
     private Long id;
 
     @Column(name = "name", unique = true, nullable = false)
@@ -86,7 +86,7 @@ public class UserEntity implements Serializable {
 
     @Column(name = "roles")
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "id"), indexes = {
+    @CollectionTable(name = "core_user_roles", joinColumns = @JoinColumn(name = "id"), indexes = {
             @Index(columnList = "id"),
             @Index(columnList = "roles")
     })

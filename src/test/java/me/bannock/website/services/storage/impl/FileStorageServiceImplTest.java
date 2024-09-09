@@ -1,7 +1,6 @@
 package me.bannock.website.services.storage.impl;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,7 +30,8 @@ class FileStorageServiceImplTest {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-        return "test/%s/%s/".formatted(callingClassName, stackTrace[1].getMethodName());
+        return "test/%s/%s/".formatted(callingClassName, stackTrace[1].getMethodName()
+                .replaceAll("lambda\\$", "").replaceAll("\\$[0-9]", ""));
     }
 
     @Test

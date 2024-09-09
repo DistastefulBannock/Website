@@ -1,16 +1,19 @@
 package me.bannock.website.services.user.impl.hibernate;
 
+import me.bannock.website.security.Roles;
 import me.bannock.website.services.user.User;
 import me.bannock.website.services.user.UserService;
 import me.bannock.website.services.user.UserServiceException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -26,6 +29,11 @@ public class HibernateUserServiceImpl implements UserService {
     private final Logger logger = LogManager.getLogger();
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+
+    @Value("${bannock.hibernateUsers.registrationsEnabled}")
+    private boolean registrationsEnabled;
+    @Value("${bannock.hibernateUsers.dummyRegistrationsEnabled}")
+    private boolean dummyRegistrationsEnabled;
 
     @Override
     @Transactional(readOnly = true)
@@ -88,7 +96,10 @@ public class HibernateUserServiceImpl implements UserService {
     @Override
     @Transactional
     public User registerDummyUser(String name, String email, String ip) throws UserServiceException {
+        if (!dummyRegistrationsEnabled)
+            throw new UserServiceException("Failed to created account because registrations are closed at this time");
         UserEntity userEntity = new UserEntity(name, email, ip);
+        userEntity.getRoles().addAll(List.of(Roles.DEFAULT_USER_ROLES));
         userRepository.save(userEntity);
         return toDto(userEntity);
     }
@@ -96,8 +107,11 @@ public class HibernateUserServiceImpl implements UserService {
     @Override
     @Transactional
     public User registerUser(User user) throws UserServiceException {
+        if (!registrationsEnabled)
+            throw new UserServiceException("Failed to created account because registrations are closed at this time");
         UserEntity userEntity = toEntity(user);
-        userRepository.saveAndFlush(userEntity);
+        userEntity.getRoles().addAll(List.of(Roles.DEFAULT_USER_ROLES));
+        userRepository.save(userEntity);
         return toDto(userEntity);
     }
 

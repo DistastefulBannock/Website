@@ -1,4 +1,4 @@
-package me.bannock.website.model.header;
+package me.bannock.website.models.header;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,7 +29,7 @@ public class HeaderAdvice {
 
         Map<HeaderLink, Integer[]> headerLinksToPositions = new HashMap<>();
         int headerWidth = 800;
-        int headerHeight = 110; // Slightly smaller than the header image because it's the area we want to draw in
+        int headerHeight = 90; // Slightly smaller than the header image because it's the area we want to draw in
         for (HeaderLink headerLink : headerLinks){
             int x = getPositionForBoundInRange(headerWidth, headerLink.getWidth());
             int y = getPositionForBoundInRange(headerHeight, headerLink.getWidth());

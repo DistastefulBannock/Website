@@ -1,4 +1,4 @@
-package me.bannock.website.model.header;
+package me.bannock.website.models.header;
 
 public class HeaderLink {
 

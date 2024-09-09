@@ -9,6 +9,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +34,10 @@ public class SecurityConfiguration {
                 "/", "/core/", "/core/login*", "/core/register*", "/core/logout*", "/error*", "/resources/**"
         ).permitAll().anyRequest().authenticated());
 
+        security.anonymous(anonymousConfigurer -> {
+            anonymousConfigurer.authorities(Roles.DEFAULT_ANON_ROLES).configure(security);
+        });
+
         // Configure login
         security.formLogin(loginConfigurer -> loginConfigurer.loginProcessingUrl("/core/processLogin")
                 .defaultSuccessUrl("/?loggedIn=true", true)
@@ -46,6 +51,11 @@ public class SecurityConfiguration {
         security.csrf(Customizer.withDefaults());
 
         return security.build();
+    }
+
+    @Bean
+    public GrantedAuthorityDefaults getGrantedAuthorityDefaults(){
+        return new GrantedAuthorityDefaults("");
     }
 
 }

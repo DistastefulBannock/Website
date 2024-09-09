@@ -1,5 +1,8 @@
 package me.bannock.website.services.storage;
 
+import me.bannock.website.security.Roles;
+import org.springframework.security.access.annotation.Secured;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -12,6 +15,7 @@ public interface StorageService {
      * @param identifier The unique identifier to match the file with. Do not use user-created values
      * @throws IOException If something goes wrong while saving the data
      */
+    @Secured(Roles.StorageServiceRoles.SAVE_DATA)
     void save(InputStream dataStream, String category, String identifier) throws IOException;
 
     /**
@@ -21,6 +25,7 @@ public interface StorageService {
      * @return A stream to load the data from. Must be closed after use.
      * @throws IOException If something goes wrong while saving the data
      */
+    @Secured(Roles.StorageServiceRoles.LOAD_DATA)
     InputStream load(String category, String identifier) throws IOException;
 
 }
