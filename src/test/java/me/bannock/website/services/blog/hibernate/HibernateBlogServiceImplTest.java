@@ -30,7 +30,7 @@ class HibernateBlogServiceImplTest {
     @Test
     @WithMockUser(username = "test", authorities = {
             Roles.BlogServiceRoles.MAKE_POSTS, Roles.BlogServiceRoles.READ_POSTS,
-            Roles.StorageServiceRoles.SAVE_DATA
+            Roles.StorageServiceRoles.SAVE_DATA, Roles.StorageServiceRoles.LOAD_DATA
     })
     public void makeAndGetPost() throws IOException, BlogServiceException {
         String myCoolAssetName = "2024-09-02_15.37.12.png";
@@ -39,16 +39,25 @@ class HibernateBlogServiceImplTest {
             ImageIO.write(ImageIO.read(HibernateBlogServiceImplTest.class.getClassLoader().getResourceAsStream("hibernateBlogServiceImplTest/%s".formatted(myCoolAssetName))), "png", baos);
             coolAssetBytes = baos.toByteArray();
         }
-        byte[] indexBytes = "This is my awesome post! Thank you for viewing it! <img src=\"assets/%s\"/>"
-                .formatted(myCoolAssetName).getBytes(StandardCharsets.UTF_8);
+
+        byte[] coolScriptBytes = "console.log('Awesome script loaded D)');".getBytes(StandardCharsets.UTF_8);
+        String coolScriptName = "coolScript.js";
+
+        byte[] indexBytes = "This is my awesome post! Thank you for viewing it! <img src=\"%s\"/><script src=\"%s\" type=\"text/javascript\"></script>"
+                .formatted(myCoolAssetName, coolScriptName).getBytes(StandardCharsets.UTF_8);
         Post post = hibernateBlogService.makePost(
                 "<h1>My awesome test post!</h1>",
+                "My awesome text post!",
                 0,
+                new String[]{"Awesome", "Testing", "Cool"},
                 new Asset("index.html", new ByteArrayInputStream(indexBytes)),
-                new Asset("assets/%s".formatted(myCoolAssetName), new ByteArrayInputStream(coolAssetBytes)));
+                new Asset(myCoolAssetName, new ByteArrayInputStream(coolAssetBytes)),
+                new Asset(coolScriptName, new ByteArrayInputStream(coolScriptBytes)));
         assertNotNull(post);
         assertEquals(post, hibernateBlogService.getPost(post.postId()));
-        logger.info("Created post, post={}", post);
+        assertArrayEquals(indexBytes, hibernateBlogService.getIndex(post.postId()).readAllBytes());
+        assertArrayEquals(coolAssetBytes, hibernateBlogService.getAsset(post.postId(), myCoolAssetName).readAllBytes());
+        logger.info("Created test post, post={}", post);
     }
 
 }

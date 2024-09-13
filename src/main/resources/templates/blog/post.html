@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{/core/fragments/main.html :: main}"></th:block>
+    <th:block th:replace="~{/blog/fragments/main.html :: main}"></th:block>
+    <title th:text="${post.titlePlaintext()}"></title>
+</head>
+<body>
+<div th:replace="~{/core/fragments/header.html :: header}"></div>
+<div th:replace="~{/blog/fragments/header.html :: header}"></div>
+
+<div style="overflow-x: hidden; width: 100%;">
+    <h2 th:utext="${post.titleHtml()}"></h2>
+    <span>Posted by </span><pre style="display: inline;" th:text="${author.getName() + '@' + datePosted}"></pre>
+    <p th:each="tag : ${post.tags()}" th:text="${tag}"></p> <!--TODO: Style tags -->
+    <hr/>
+    <th:block th:utext="${postIndex}"></th:block>
+</div>
+
+<div th:replace="~{/blog/fragments/footer.html :: footer}"></div>
+<div th:replace="~{/core/fragments/footer.html :: footer}"></div>
+</body>
+</html>

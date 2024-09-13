@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{/core/fragments/main.html :: main}"></th:block>
+    <th:block th:replace="~{/blog/fragments/main.html :: main}"></th:block>
+    <title>Blog</title>
+</head>
+<body>
+<div th:replace="~{/core/fragments/header.html :: header}"></div>
+<div th:replace="~{/blog/fragments/header.html :: header}"></div>
+
+<h1>Hello Blog!</h1>
+
+<div th:replace="~{/blog/fragments/footer.html :: footer}"></div>
+<div th:replace="~{/core/fragments/footer.html :: footer}"></div>
+</body>
+</html>

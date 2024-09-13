@@ -37,14 +37,17 @@ public interface BlogService {
     /**
      * Attempt to make a new post
      * @param titleHtml The html to display in the title of the post. Must be less than or equal to 256 characters long
+     * @param titlePlaintext The text to display as the title on the post page. Must be less than or equal to 256 chars long
      * @param authorId The author of the post
+     * @param tags The tags the post should have. Used by users for searching post topics.
      * @param index The index file of the post; what is shown to the user when first opened
      * @param assets Any asset files used by the post
      * @return The post
      * @throws BlogServiceException If something went wrong while creating the post
      */
     @Secured(Roles.BlogServiceRoles.MAKE_POSTS)
-    Post makePost(String titleHtml, long authorId, Asset index, Asset... assets) throws BlogServiceException;
+    Post makePost(String titleHtml, String titlePlaintext, long authorId,
+                  String[] tags, Asset index, Asset... assets) throws BlogServiceException;
 
     /**
      * Gets some of the comments for a given post

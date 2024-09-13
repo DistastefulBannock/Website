@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,7 +62,13 @@ public class FileStorageServiceImpl implements StorageService {
     @Override
     public InputStream load(String category, String identifier) throws IOException {
         File save = toFile(category, identifier);
-        return new FileInputStream(save);
+        try{
+            return new FileInputStream(save);
+        }catch(FileNotFoundException e){
+            logger.warn("Could not find file to load data from, category={}, identifier={}, filePath={}",
+                    category, identifier, save.getAbsolutePath());
+            throw new RuntimeException(e);
+        }
     }
 
     /**

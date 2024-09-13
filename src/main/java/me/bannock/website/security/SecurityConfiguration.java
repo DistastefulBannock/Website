@@ -28,10 +28,10 @@ public class SecurityConfiguration {
 
     @Bean
     @Autowired
-    public DefaultSecurityFilterChain configureHttp(HttpSecurity security,
-                                                    UserDetailsService userDetailsService) throws Exception {
+    public DefaultSecurityFilterChain configureHttp(HttpSecurity security) throws Exception {
         security.authorizeHttpRequests(authManagerRegistry -> authManagerRegistry.requestMatchers(
-                "/", "/core/", "/core/login*", "/core/register*", "/core/logout*", "/error*", "/resources/**"
+                "/", "/core/", "/core/login*", "/core/register*",
+                "/core/logout*", "/error*", "/resources/**", "/blog/**"
         ).permitAll().anyRequest().authenticated());
 
         security.anonymous(anonymousConfigurer -> {

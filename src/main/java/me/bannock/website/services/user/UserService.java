@@ -3,6 +3,13 @@ package me.bannock.website.services.user;
 public interface UserService {
 
     /**
+     * @param id The user's id
+     * @return The user
+     * @throws UserServiceException if something goes wrong while getting hte user
+     */
+    User getUserWithId(long id) throws UserServiceException;
+
+    /**
      * Gets a user using their username and password
      * @param name The user's username
      * @param password The user's password

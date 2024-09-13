@@ -12,7 +12,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "blog_posts", indexes = {
@@ -21,14 +23,27 @@ import java.util.List;
 })
 public class PostEntity {
 
-    public PostEntity(long authorId, long millisPosted, String titleHtml, String indexPath, List<String> assetPaths) {
-        this(authorId, millisPosted, titleHtml, indexPath, assetPaths, false);
+    public PostEntity(long authorId, long millisPosted, String titleHtml,
+                      String titlePlaintext, List<String> tags, String indexPath,
+                      List<String> assetPaths) {
+        this(authorId, millisPosted, titleHtml, titlePlaintext, tags, indexPath, assetPaths, false);
     }
 
-    public PostEntity(long authorId, long millisPosted, String titleHtml, String indexPath, List<String> assetPaths, boolean deleted) {
+    public PostEntity(long authorId, long millisPosted, String titleHtml,
+                      String titlePlaintext, List<String> tags, String indexPath,
+                      List<String> assetPaths, boolean deleted) {
+        Objects.requireNonNull(titleHtml);
+        Objects.requireNonNull(titlePlaintext);
+        Objects.requireNonNull(indexPath);
+        if (tags == null)
+            tags = new ArrayList<>();
+        if (assetPaths == null)
+            assetPaths = new ArrayList<>();
         this.authorId = authorId;
         this.millisPosted = millisPosted;
         this.titleHtml = titleHtml;
+        this.titlePlaintext = titlePlaintext;
+        this.tags = tags;
         this.indexPath = indexPath;
         this.assetPaths = assetPaths;
         this.deleted = deleted;
@@ -42,21 +57,32 @@ public class PostEntity {
     @SequenceGenerator(name = "blog_post_id_seq", sequenceName = "blog_post_id_seq", initialValue = 0, allocationSize = 1)
     private Long postId;
 
-    @Column(name = "author_id")
+    @Column(name = "author_id", nullable = false)
     private long authorId;
 
-    @Column(name = "millis_posted")
+    @Column(name = "millis_posted", nullable = false)
     private long millisPosted;
 
-    @Column(name = "title", length = 256)
+    @Column(name = "titleHtml", length = 256, nullable = false)
     private String titleHtml;
 
-    @Column(name = "index_path")
+    @Column(name = "title_plaintext", length = 256, nullable = false)
+    private String titlePlaintext;
+
+    @Column(name = "tags")
+    @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
+    @CollectionTable(name = "blog_post_tags", joinColumns = @JoinColumn(name = "post_id"), indexes = {
+            @Index(columnList = "post_id"),
+            @Index(columnList = "tags")
+    })
+    private List<String> tags;
+
+    @Column(name = "index_path", nullable = false)
     private String indexPath;
 
     @Column(name = "asset_paths")
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
-    @CollectionTable(name = "blog.post_assets", joinColumns = @JoinColumn(name = "post_id"), indexes = {
+    @CollectionTable(name = "blog_post_assets", joinColumns = @JoinColumn(name = "post_id"), indexes = {
             @Index(columnList = "post_id"),
             @Index(columnList = "asset_paths")
     })
@@ -69,8 +95,12 @@ public class PostEntity {
         this.postId = postId;
     }
 
-    public long getPostId() {
+    public Long getPostId() {
         return postId;
+    }
+
+    public void setPostId(Long postId) {
+        this.postId = postId;
     }
 
     public long getAuthorId() {
@@ -97,12 +127,28 @@ public class PostEntity {
         this.titleHtml = titleHtml;
     }
 
+    public String getTitlePlaintext() {
+        return titlePlaintext;
+    }
+
+    public void setTitlePlaintext(String titlePlaintext) {
+        this.titlePlaintext = titlePlaintext;
+    }
+
     public String getIndexPath() {
         return indexPath;
     }
 
     public void setIndexPath(String indexPath) {
         this.indexPath = indexPath;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 
     public List<String> getAssetPaths() {
@@ -119,19 +165,6 @@ public class PostEntity {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
-    }
-
-    @Override
-    public String toString() {
-        return "PostEntity{" +
-                "postId=" + postId +
-                ", authorId=" + authorId +
-                ", millisPosted=" + millisPosted +
-                ", titleHtml='" + titleHtml + '\'' +
-                ", indexPath='" + indexPath + '\'' +
-                ", assetPaths=" + assetPaths +
-                ", deleted=" + deleted +
-                '}';
     }
 
 }

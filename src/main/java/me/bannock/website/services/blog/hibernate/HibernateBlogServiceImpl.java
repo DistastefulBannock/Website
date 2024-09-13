@@ -81,7 +81,7 @@ public class HibernateBlogServiceImpl implements BlogService {
 
     @Override
     @Transactional
-    public Post makePost(String titleHtml, long authorId, Asset index, Asset... assets) throws BlogServiceException {
+    public Post makePost(String titleHtml, String titlePlaintext, long authorId, String[] tags, Asset index, Asset... assets) throws BlogServiceException {
         Objects.requireNonNull(titleHtml);
         Objects.requireNonNull(index);
         if (assets == null)
@@ -103,8 +103,8 @@ public class HibernateBlogServiceImpl implements BlogService {
 
         PostEntity post = new PostEntity(
                 authorId, System.currentTimeMillis(),
-                titleHtml, index.name(),
-                Arrays.stream(assets).map(Asset::name).toList()
+                titleHtml, titlePlaintext, Arrays.asList(tags),
+                index.name(), Arrays.stream(assets).map(Asset::name).toList()
         );
         post = postRepository.save(post);
 
@@ -209,8 +209,10 @@ public class HibernateBlogServiceImpl implements BlogService {
         return new Post(
                 entity.getPostId(),
                 entity.getTitleHtml(),
+                entity.getTitlePlaintext(),
                 entity.getAuthorId(),
                 entity.getMillisPosted(),
+                entity.getTags().toArray(new String[0]),
                 entity.getAssetPaths().toArray(new String[0])
         );
     }

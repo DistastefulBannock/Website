@@ -36,6 +36,20 @@ public class HibernateUserServiceImpl implements UserService {
     private boolean dummyRegistrationsEnabled;
 
     @Override
+    public User getUserWithId(long id) throws UserServiceException {
+        Optional<UserEntity> userEntity = userRepository.findById(id);
+
+        if (userEntity.isEmpty()){
+            logger.info("Attempted to get user but no user exists for the provided id, id={}", id);
+            throw new UserServiceException("No user with that id exists.",
+                    "Id \"%s\" does not exist".formatted(id));
+        }
+
+        logger.info("Successfully got user using their id, userEntity={}", userEntity.get());
+        return toDto(userEntity.get());
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public User getUserWithNameAndPassword(String name, String password) throws UserServiceException {
         Optional<UserEntity> userEntity = userRepository.findByName(name);
@@ -110,7 +124,9 @@ public class HibernateUserServiceImpl implements UserService {
         if (!registrationsEnabled)
             throw new UserServiceException("Failed to created account because registrations are closed at this time");
         UserEntity userEntity = toEntity(user);
-        userEntity.getRoles().addAll(List.of(Roles.DEFAULT_USER_ROLES));
+        List<String> roles = new ArrayList<>(userEntity.getRoles());
+        roles.addAll(List.of(Roles.DEFAULT_USER_ROLES));
+        userEntity.setRoles(roles);
         userRepository.save(userEntity);
         return toDto(userEntity);
     }
