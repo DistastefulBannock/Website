@@ -1,5 +1,6 @@
 package me.bannock.website.controllers.blog;
 
+import brave.Tracer;
 import jakarta.servlet.http.HttpServletResponse;
 import me.bannock.website.services.blog.BlogService;
 import me.bannock.website.services.blog.BlogServiceException;
@@ -14,14 +15,18 @@ import org.overviewproject.mime_types.MimeTypeDetector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,6 +48,9 @@ public class BlogController {
     private final Logger logger = LogManager.getLogger();
     private final BlogService blogService;
     private final UserService userService;
+
+    @Autowired
+    private Tracer tracer;
 
     @Value("${bannock.blogController.indexCharsetName}")
     private String indexCharsetName;
@@ -67,7 +75,7 @@ public class BlogController {
             indexData = new String(getBytesFromInputStream(postIndexStream), Charset.forName(indexCharsetName));
         }catch (BlogServiceException e) {
             logger.warn("Something went wrong while fetching post index, requestedPostId={}", postId, e);
-            throw new RuntimeException(e);
+            throw new WrappedBlogServiceException(e, model);
         }catch (IOException e) {
             logger.error("Something went wrong while reading index input stream, postId={}", postId, e);
             throw new RuntimeException(e);
@@ -96,8 +104,8 @@ public class BlogController {
     @GetMapping(value = "/{postId}/{assetName}")
     @ResponseBody
     public ResponseEntity<?> getPostAsset(@PathVariable(value = "postId") long postId,
-                                                 @PathVariable(value = "assetName") String assetName,
-                                                 HttpServletResponse response) throws GetBytesException {
+                                          @PathVariable(value = "assetName") String assetName,
+                                          HttpServletResponse response, Model model) throws GetBytesException {
         try{
             InputStream postAssetStream = blogService.getAsset(postId, assetName);
 
@@ -110,8 +118,17 @@ public class BlogController {
                     .body(new InputStreamResource(postAssetStream));
         }catch (BlogServiceException e) {
             logger.warn("Something went wrong while fetching post index, requestedPostId={}", postId, e);
-            throw new RuntimeException(e);
+            throw new WrappedBlogServiceException(e, model);
         }
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(WrappedBlogServiceException.class)
+    public ModelAndView handleBlogServiceException(WrappedBlogServiceException blogServiceException){
+        ModelAndView model = new ModelAndView("blog/error", blogServiceException.getModel().asMap());
+        model.addObject("tId", tracer.currentSpan().context().traceIdString());
+        model.addObject("userFriendlyMessage", blogServiceException.getUserFriendlyError());
+        return model;
     }
 
     private byte[] getBytesFromInputStream(InputStream inputStream) throws IOException {

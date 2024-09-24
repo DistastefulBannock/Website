@@ -40,6 +40,8 @@ public class HibernateBlogServiceImpl implements BlogService {
     private boolean persistOriginalFileNames;
     @Value("${bannock.hibernateBlog.commentPostingEnabled}")
     private boolean commentPostingEnabled;
+    @Value("${bannock.hibernateBlog.commentPageSize}")
+    private long commentPageSize = 50;
 
     @Override
     @Transactional(readOnly = true)
@@ -130,6 +132,7 @@ public class HibernateBlogServiceImpl implements BlogService {
 
     @Override
     public Comment[] getComments(long postId, int page) throws BlogServiceException {
+//        commentRepository.
         return new Comment[0]; // TODO
     }
 

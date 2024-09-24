@@ -10,7 +10,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "blog_comments", indexes = {
-        @Index(columnList = "id", unique = true)
+        @Index(columnList = "id", unique = true),
+        @Index(columnList = "post_id")
 })
 public class CommentEntity {
 
@@ -19,6 +20,9 @@ public class CommentEntity {
     @Column(name = "comment_id", nullable = false)
     @SequenceGenerator(name = "blog_comment_id_seq", sequenceName = "blog_comment_id_seq", initialValue = 0, allocationSize = 1)
     private Long commentId;
+
+    @Column(name = "post_id")
+    private long postId;
 
     @Column(name = "author_id")
     private long authorId;
@@ -38,6 +42,14 @@ public class CommentEntity {
 
     private void setCommentId(long commentId) {
         this.commentId = commentId;
+    }
+
+    public long getPostId() {
+        return postId;
+    }
+
+    public void setPostId(long postId) {
+        this.postId = postId;
     }
 
     public long getAuthorId() {
