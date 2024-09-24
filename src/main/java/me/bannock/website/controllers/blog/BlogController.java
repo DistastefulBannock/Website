@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
@@ -33,7 +34,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
-import java.util.Date;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/blog")
@@ -56,8 +60,25 @@ public class BlogController {
     private String indexCharsetName;
 
     @GetMapping("/")
-    public String index(){
-        // TODO: Blog home page
+    public String index(@RequestParam(name = "page", required = false, defaultValue = "0") int page, Model model){
+        List<Post> featuredPosts = blogService.getFeaturedPosts(page);
+        Map<Long, User> uidToAuthorsMappings = new HashMap<>();
+        for (Post post : featuredPosts){
+            if (uidToAuthorsMappings.containsKey(post.authorId()))
+                continue;
+            try {
+                User author = userService.getUserWithId(post.authorId());
+                uidToAuthorsMappings.put(post.authorId(), author);
+            } catch (UserServiceException e) {
+                throw new WrappedBlogServiceException(
+                        new BlogServiceException(e.getMessage(), e.getUserFriendlyError()), model);
+            }
+        }
+        model.addAttribute("featuredPosts", featuredPosts);
+        model.addAttribute("uidToAuthorsMappings", uidToAuthorsMappings);
+        model.addAttribute("nextPageAvailable", !blogService.getFeaturedPosts(page + 1).isEmpty());
+        model.addAttribute("blogHeaderTitle", "Featured Posts");
+        logger.info("User requested featured posts, page={}, featuredPostSize={}", page, featuredPosts.size());
         return "blog/home";
     }
 
@@ -95,9 +116,12 @@ public class BlogController {
 
         logger.info("User requested index for post, postId={}", postId);
         model.addAttribute("post", post);
-        model.addAttribute("datePosted", new Date(post.millisPosted()).toString());
         model.addAttribute("author", author);
         model.addAttribute("postIndex", indexData);
+
+        StringBuilder seoKeywordsBuilder = new StringBuilder();
+        Arrays.stream(post.tags()).forEachOrdered(tag -> seoKeywordsBuilder.append(", ").append(tag));
+        model.addAttribute("seoKeywords", seoKeywordsBuilder.substring(2));
         return "blog/post";
     }
 

@@ -4,8 +4,18 @@
     <meta charset="UTF-8">
 </head>
 <body>
-<div th:fragment="header">
-
+<div th:fragment="header" id="blogHeader">
+    <div id="blogHeaderSpacer">
+        <span class="left">
+            <span th:if="${blogHeaderTitle != null}" th:text="${blogHeaderTitle}"></span>
+            <a th:if="${post != null}" href="../">Back</a>
+        </span>
+        <span class="right">
+            <th:block th:if="${post != null}">
+                <button class="jsOnly" title="Print post" id="blogHeaderPostPrintButton" onclick="window.print();"><img alt="Printer gif" th:src="@{/resources/blog/img/printer.gif}"/></button>
+            </th:block>
+        </span>
+    </div>
 </div>
 </body>
 </html>

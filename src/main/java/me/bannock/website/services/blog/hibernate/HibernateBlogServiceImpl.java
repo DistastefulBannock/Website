@@ -10,12 +10,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -40,13 +42,18 @@ public class HibernateBlogServiceImpl implements BlogService {
     private boolean persistOriginalFileNames;
     @Value("${bannock.hibernateBlog.commentPostingEnabled}")
     private boolean commentPostingEnabled;
+    @Value("${bannock.hibernateBlog.featuredPageSize}")
+    private int featuredPageSize = 10;
     @Value("${bannock.hibernateBlog.commentPageSize}")
-    private long commentPageSize = 50;
+    private int commentPageSize = 50;
 
     @Override
     @Transactional(readOnly = true)
     public Post getPost(long postId) throws BlogServiceException {
         PostEntity post = getPostEntity(postId);
+        if (post.isDeleted())
+            throw new BlogServiceException("Can not get post because this post has been deleted",
+                    "Post has been deleted");
         logger.info("Found post with post id, postId={}", postId);
         return toDto(post);
     }
@@ -128,6 +135,13 @@ public class HibernateBlogServiceImpl implements BlogService {
         logger.info("User created new blog post, authorId={}, postId={}", authorId, post.getPostId());
 
         return toDto(post);
+    }
+
+    @Override
+    public List<Post> getFeaturedPosts(int page) {
+        List<PostEntity> postsOnPage = postRepository
+                .findByOrderByMillisPostedDesc(Pageable.ofSize(featuredPageSize).withPage(page));
+        return postsOnPage.stream().map(this::toDto).toList();
     }
 
     @Override

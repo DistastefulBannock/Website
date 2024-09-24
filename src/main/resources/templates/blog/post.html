@@ -3,21 +3,27 @@
 <head>
     <th:block th:replace="~{/core/fragments/main.html :: main}"></th:block>
     <th:block th:replace="~{/blog/fragments/main.html :: main}"></th:block>
+    <link rel="stylesheet" th:href="@{/resources/blog/css/post.css}">
+    <meta name="keywords" th:content="${seoKeywords}">
     <title th:text="'Bnok Blog - ' + ${post.titlePlaintext()}"></title>
 </head>
 <body>
 <div th:replace="~{/core/fragments/header.html :: header}"></div>
 <div th:replace="~{/blog/fragments/header.html :: header}"></div>
 
-<div style="overflow-x: hidden; width: 100%;">
+<div style="overflow-x: hidden; width: 100%;" id="postContainer">
     <h2 th:utext="${post.titleHtml()}"></h2>
-    <span>Posted by </span><pre style="display: inline;" th:text="${author.getName() + '@' + datePosted}"></pre>
-    <p th:each="tag : ${post.tags()}" th:text="${tag}"></p> <!--TODO: Style tags -->
+    <p style="margin-top: 0;">
+        <nobr><span class="postTag" th:each="tag : ${post.tags()}" th:text="${tag}"></span></nobr>
+    </p>
+    <span>Posted by </span><pre style="display: inline;" th:text="${author.getName() + '@' + post.getFormattedPostDate()}"></pre>
     <hr/>
-    <th:block th:utext="${postIndex}"></th:block>
+    <div id="postContent"><th:block th:utext="${postIndex}"></th:block></div>
 </div>
 
 <div th:replace="~{/blog/fragments/footer.html :: footer}"></div>
 <div th:replace="~{/core/fragments/footer.html :: footer}"></div>
+
+
 </body>
 </html>

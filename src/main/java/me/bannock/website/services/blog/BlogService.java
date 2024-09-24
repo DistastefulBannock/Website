@@ -4,6 +4,7 @@ import me.bannock.website.security.Roles;
 import org.springframework.security.access.annotation.Secured;
 
 import java.io.InputStream;
+import java.util.List;
 
 public interface BlogService {
 
@@ -69,5 +70,12 @@ public interface BlogService {
      */
     @Secured(Roles.BlogServiceRoles.MAKE_COMMENTS)
     Comment makeComment(long postId, long commentAuthorId, String content) throws BlogServiceException;
+
+    /**
+     * @param page The page number
+     * @return The featured posts to display on the blog home page
+     */
+    @Secured(Roles.BlogServiceRoles.READ_POSTS)
+    List<Post> getFeaturedPosts(int page);
 
 }

@@ -1,0 +1,8 @@
+@media print {
+    body *:not(#postContainer, #postContainer *){
+        display: none;
+    }
+    #postContainer, #postContainer * {
+        display: block; !important;
+    }
+}

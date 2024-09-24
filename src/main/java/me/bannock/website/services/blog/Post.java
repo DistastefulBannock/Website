@@ -1,6 +1,7 @@
 package me.bannock.website.services.blog;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Objects;
 
 public record Post(long postId, String titleHtml, String titlePlaintext,
@@ -27,6 +28,13 @@ public record Post(long postId, String titleHtml, String titlePlaintext,
             throw new IllegalArgumentException("Title HTML must be less than or equal to 256 characters long");
         if (titlePlaintext.length() > 256)
             throw new IllegalArgumentException("Plaintext title must be less than or equal to 256 characters long");
+    }
+
+    /**
+     * @return The time and date the post was made formatted in a string
+     */
+    public String getFormattedPostDate(){
+        return new Date(millisPosted()).toString();
     }
 
     @Override

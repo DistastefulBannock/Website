@@ -1,0 +1,7 @@
+.postTag{
+    background-color: var(--primary);
+    padding: 3px;
+    border-radius: 2px;
+    margin: 3px;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}

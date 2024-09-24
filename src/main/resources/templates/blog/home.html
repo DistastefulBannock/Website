@@ -3,13 +3,23 @@
 <head>
     <th:block th:replace="~{/core/fragments/main.html :: main}"></th:block>
     <th:block th:replace="~{/blog/fragments/main.html :: main}"></th:block>
+    <link rel="stylesheet" th:href="@{/resources/blog/css/home.css}">
     <title>Blog</title>
 </head>
 <body>
 <div th:replace="~{/core/fragments/header.html :: header}"></div>
 <div th:replace="~{/blog/fragments/header.html :: header}"></div>
 
-<h1>Hello Blog!</h1>
+<!--<h1>Featured Posts: </h1>-->
+<div id="featuredPosts">
+    <a th:each="post : ${featuredPosts}" th:href="${post.postId() + '/'}">
+        <h3 th:text="${post.titlePlaintext()}"></h3>
+        <div style="display: flex; flex-direction: column; align-items: end;">
+            <pre th:text="${uidToAuthorsMappings.get(post.authorId()).getName()} + '@' + ${post.getFormattedPostDate()}"></pre>
+            <nobr><span class="postTag" th:each="tag : ${post.tags()}" th:text="${tag}"></span></nobr>
+        </div>
+    </a>
+</div>
 
 <div th:replace="~{/blog/fragments/footer.html :: footer}"></div>
 <div th:replace="~{/core/fragments/footer.html :: footer}"></div>

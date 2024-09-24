@@ -1,0 +1,22 @@
+#featuredPosts{
+    border: var(--secondary) solid 1px;
+    margin: 0;
+}
+
+#featuredPosts a{
+    border-bottom: var(--secondary) solid 1px;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    text-decoration: inherit;
+    color: inherit;
+}
+
+#featuredPosts a:visited{
+    text-decoration: inherit;
+    color: inherit;
+}
+
+#featuredPosts a:last-child{
+    border-bottom: none;
+}
