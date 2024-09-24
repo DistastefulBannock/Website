@@ -20,12 +20,12 @@
 </button>
 <div class="jsOnly" style="margin-bottom: 5px;">
     <div id="tId" style="display: none; background-color: black;">
-        <p th:text="'Take this trace id, persistent one, for when presented to ' + ${@environment.getProperty('bannock.emails.support')} + ', the gnomes that upkeep this part of the realm, your query will be answered!'"></p>
+        <p th:text="'Take this trace id, persistent one, for when presented to ' + ${@environment.getProperty('bannock.contact.support')} + ', the gnomes that upkeep this part of the realm, your query will be answered!'"></p>
         <pre th:text="'tId=' + ${tId}"></pre>
     </div>
 </div>
 <noscript>
-    <p th:text="'If you need more assistance with this matter, please provide the following to ' + ${@environment.getProperty('bannock.emails.support')} + ': '"></p>
+    <p th:text="'If you need more assistance with this matter, please provide the following to ' + ${@environment.getProperty('bannock.contact.support')} + ': '"></p>
     <pre th:text="'tId=' + ${tId}"></pre>
 </noscript>
 
