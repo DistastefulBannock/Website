@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
 </head>
 <body>
-<div th:fragment="footer">
+<div th:fragment="footer" id="footer">
     <div id="copyright">
         <span th:if="!${#dates.format(#dates.createNow(), 'yyyy').toString().equals('2024')}">
             © 2024 - [[${#dates.format(#dates.createNow(), 'yyyy')}]] DistastefulBannock
@@ -12,6 +12,7 @@
         <span th:unless="!${#dates.format(#dates.createNow(), 'yyyy').toString().equals('2024')}">
             © 2024 DistastefulBannock
         </span>
+        <span><img th:src="@{/resources/core/img/pyramids of power.gif}" alt="pyramids of power"/></span>
     </div>
 </div>
 </body>

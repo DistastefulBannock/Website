@@ -1,5 +1,5 @@
 @media print {
-    body *:not(#postContainer, #postContainer *){
+    body *:not(#postContainer, #postContainer *, #footer, #footer *){
         display: none;
     }
     #postContainer, #postContainer * {

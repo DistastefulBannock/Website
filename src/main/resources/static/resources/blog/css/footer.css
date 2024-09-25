@@ -1,0 +1,35 @@
+#blogFooter{
+    width: 100%;
+    height: 2em;
+    line-height: 2em;
+    background: linear-gradient(360deg, rgba(255,255,255,0.9) 0%, var(--secondary) 45%);
+    color: white;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+#blogFooterSpacer{
+    padding-left: 20px;
+    padding-right: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#blogFooterSpacer span a{
+    font-size: 1rem;
+}
+
+#blogFooter a{
+    text-decoration: inherit;
+    color: inherit;
+}
+
+#blogFooter p, #blogFooter a, #blogFooter span{
+    font-size: 1.4rem;
+}
+
+#blogFooter a:visited{
+    text-decoration: inherit;
+    color: inherit;
+}

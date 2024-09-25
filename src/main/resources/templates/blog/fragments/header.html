@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
 </head>
@@ -7,13 +7,15 @@
 <div th:fragment="header" id="blogHeader">
     <div id="blogHeaderSpacer">
         <span class="left">
-            <span th:if="${blogHeaderTitle != null}" th:text="${blogHeaderTitle}"></span>
-            <a th:if="${post != null}" href="../">Back</a>
+            <a th:if="${post != null || tId != null}" href="../"><-- Back</a>
+            <a th:if="${post == null && tId == null && (isOnHome == null || !isOnHome)}" href="./"><-- Back</a>
         </span>
+        <span th:if="${blogHeaderTitle != null}" th:text="${blogHeaderTitle}"></span>
         <span class="right">
             <th:block th:if="${post != null}">
                 <button class="jsOnly" title="Print post" id="blogHeaderPostPrintButton" onclick="window.print();"><img alt="Printer gif" th:src="@{/resources/blog/img/printer.gif}"/></button>
             </th:block>
+            <a th:href="@{makePost}" sec:authorize="hasAuthority('BLOG_MAKE_POSTS')"><img alt="Upload post gif" th:src="@{/resources/blog/img/upload.gif}"/></a>
         </span>
     </div>
 </div>

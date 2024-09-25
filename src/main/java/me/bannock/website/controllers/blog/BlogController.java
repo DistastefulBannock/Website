@@ -2,6 +2,7 @@ package me.bannock.website.controllers.blog;
 
 import brave.Tracer;
 import jakarta.servlet.http.HttpServletResponse;
+import me.bannock.website.security.Roles;
 import me.bannock.website.services.blog.BlogService;
 import me.bannock.website.services.blog.BlogServiceException;
 import me.bannock.website.services.blog.Post;
@@ -18,6 +19,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -74,10 +76,13 @@ public class BlogController {
                         new BlogServiceException(e.getMessage(), e.getUserFriendlyError()), model);
             }
         }
+
         model.addAttribute("featuredPosts", featuredPosts);
         model.addAttribute("uidToAuthorsMappings", uidToAuthorsMappings);
         model.addAttribute("nextPageAvailable", !blogService.getFeaturedPosts(page + 1).isEmpty());
         model.addAttribute("blogHeaderTitle", "Featured Posts");
+        model.addAttribute("currentPage", page);
+        model.addAttribute("isOnHome", true);
         logger.info("User requested featured posts, page={}, featuredPostSize={}", page, featuredPosts.size());
         return "blog/home";
     }
@@ -116,6 +121,7 @@ public class BlogController {
 
         logger.info("User requested index for post, postId={}", postId);
         model.addAttribute("post", post);
+        model.addAttribute("blogHeaderTitle", post.titlePlaintext());
         model.addAttribute("author", author);
         model.addAttribute("postIndex", indexData);
 
@@ -144,6 +150,13 @@ public class BlogController {
             logger.warn("Something went wrong while fetching post index, requestedPostId={}", postId, e);
             throw new WrappedBlogServiceException(e, model);
         }
+    }
+
+    @GetMapping("/makePost")
+    @Secured(Roles.BlogServiceRoles.MAKE_POSTS)
+    public String getMakePost(Model model){
+        model.addAttribute("blogHeaderTitle", "Create a new post");
+        return "blog/makePost";
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

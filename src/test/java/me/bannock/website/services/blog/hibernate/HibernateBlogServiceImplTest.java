@@ -60,4 +60,14 @@ class HibernateBlogServiceImplTest {
         logger.info("Created test post, post={}", post);
     }
 
+//    @Test
+//    @WithMockUser(username = "test", authorities = {
+//            Roles.BlogServiceRoles.MAKE_POSTS, Roles.BlogServiceRoles.READ_POSTS,
+//            Roles.StorageServiceRoles.SAVE_DATA, Roles.StorageServiceRoles.LOAD_DATA
+//    })
+//    public void makeABunchOfPosts() throws IOException, BlogServiceException {
+//        for (int i = 0; i < 100; i++)
+//            makeAndGetPost();
+//    }
+
 }

@@ -5,7 +5,16 @@
 </head>
 <body>
 <div th:fragment="footer">
-
+    <div th:fragment="header" id="blogFooter">
+        <div id="blogFooterSpacer">
+            <span class="left">
+                <a th:if="${currentPage != null && currentPage > 0}" th:href="${'?page=' + (currentPage - 1)}"><-- Last Page</a>
+            </span>
+            <span class="right">
+                <a th:if="${nextPageAvailable != null && nextPageAvailable}" th:href="${'?page=' + (currentPage + 1)}">Next Page --></a>
+            </span>
+        </div>
+    </div>
 </div>
 </body>
 </html>
