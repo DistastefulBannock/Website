@@ -51,6 +51,19 @@ public interface BlogService {
                   String[] tags, Asset index, Asset... assets) throws BlogServiceException;
 
     /**
+     * @param page The page number
+     * @return The featured posts to display on the blog home page
+     */
+    @Secured(Roles.BlogServiceRoles.READ_POSTS)
+    List<Post> getFeaturedPosts(int page);
+
+    /**
+     * @return The total amount of pages of featured posts
+     */
+    @Secured(Roles.BlogServiceRoles.READ_POSTS)
+    int getFeaturePostTotalPages();
+
+    /**
      * Gets some of the comments for a given post
      * @param postId The post id to get the comments for
      * @param page The page of comments to get; starts at 0
@@ -70,12 +83,5 @@ public interface BlogService {
      */
     @Secured(Roles.BlogServiceRoles.MAKE_COMMENTS)
     Comment makeComment(long postId, long commentAuthorId, String content) throws BlogServiceException;
-
-    /**
-     * @param page The page number
-     * @return The featured posts to display on the blog home page
-     */
-    @Secured(Roles.BlogServiceRoles.READ_POSTS)
-    List<Post> getFeaturedPosts(int page);
 
 }

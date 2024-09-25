@@ -8,11 +8,11 @@
     <div th:fragment="header" id="blogFooter">
         <div id="blogFooterSpacer">
             <span class="left">
-                <a th:if="${currentPage != null && currentPage > 0}" th:href="${'?page=' + (currentPage - 1)}"><-- Last Page</a>
+                <a class="pageLink" th:if="${currentPage != null && currentPage > 0}" th:each="index : ${#numbers.sequence(T(java.lang.Math).max(currentPage - 10, 0), currentPage - 1)}" th:text="${index + 1}" th:href="${'?page=' + (index)}"></a>
             </span>
             <span th:if="${currentPage != null}" th:text="'Page ' + ${currentPage + 1}"></span>
             <span class="right">
-                <a th:if="${nextPageAvailable != null && nextPageAvailable}" th:href="${'?page=' + (currentPage + 1)}">Next Page --></a>
+                <a class="pageLink" th:if="${currentPage != null && totalPages != null && currentPage < totalPages - 2}" th:each="index : ${#numbers.sequence(currentPage + 1, T(java.lang.Math).min(currentPage + 10, totalPages - 2))}" th:text="${index + 1}" th:href="${'?page=' + (index)}"></a>
             </span>
         </div>
     </div>

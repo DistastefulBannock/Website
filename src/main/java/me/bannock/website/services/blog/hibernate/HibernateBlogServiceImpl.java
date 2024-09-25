@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -139,14 +140,21 @@ public class HibernateBlogServiceImpl implements BlogService {
 
     @Override
     public List<Post> getFeaturedPosts(int page) {
-        List<PostEntity> postsOnPage = postRepository
+        Page<PostEntity> postsOnPage = postRepository
                 .findByOrderByMillisPostedDesc(Pageable.ofSize(featuredPageSize).withPage(page));
         return postsOnPage.stream().map(this::toDto).toList();
     }
 
     @Override
+    public int getFeaturePostTotalPages() {
+        Page<PostEntity> postsOnPage = postRepository
+                .findByOrderByMillisPostedDesc(Pageable.ofSize(featuredPageSize));
+        return postsOnPage.getTotalPages();
+    }
+
+    @Override
     public Comment[] getComments(long postId, int page) throws BlogServiceException {
-//        commentRepository.
+//        commentRepository.findByPostId(postId, Pageable.ofSize(commentPageSize));
         return new Comment[0]; // TODO
     }
 

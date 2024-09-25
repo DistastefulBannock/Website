@@ -71,6 +71,7 @@ public class BlogController {
     @GetMapping("/")
     public String index(@RequestParam(name = "page", required = false, defaultValue = "0") int page, Model model){
         List<Post> featuredPosts = blogService.getFeaturedPosts(page);
+        int totalFeaturedPostPages = blogService.getFeaturePostTotalPages();
         Map<Long, User> uidToAuthorsMappings = new HashMap<>();
         for (Post post : featuredPosts){
             if (uidToAuthorsMappings.containsKey(post.authorId()))
@@ -86,7 +87,7 @@ public class BlogController {
 
         model.addAttribute("featuredPosts", featuredPosts);
         model.addAttribute("uidToAuthorsMappings", uidToAuthorsMappings);
-        model.addAttribute("nextPageAvailable", !blogService.getFeaturedPosts(page + 1).isEmpty());
+        model.addAttribute("totalPages", totalFeaturedPostPages);
         model.addAttribute("blogHeaderTitle", "Featured Posts");
         model.addAttribute("currentPage", page);
         model.addAttribute("isOnHome", true);
