@@ -1,0 +1,13 @@
+#makePostForm{
+    font-size: 2em;
+}
+
+#makePostForm div{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+#makePostForm input[type=text]{
+    width: 40%;
+}

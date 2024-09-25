@@ -13,9 +13,9 @@
         <span th:if="${blogHeaderTitle != null}" th:text="${blogHeaderTitle}"></span>
         <span class="right">
             <th:block th:if="${post != null}">
-                <button class="jsOnly" title="Print post" id="blogHeaderPostPrintButton" onclick="window.print();"><img alt="Printer gif" th:src="@{/resources/blog/img/printer.gif}"/></button>
+                <button class="jsOnly" title="Print post" id="blogHeaderPostPrintButton" onclick="window.print();"><img alt="Printer gif" title="Print page" th:src="@{/resources/blog/img/printer.gif}"/></button>
             </th:block>
-            <a th:href="@{makePost}" sec:authorize="hasAuthority('BLOG_MAKE_POSTS')"><img alt="Upload post gif" th:src="@{/resources/blog/img/upload.gif}"/></a>
+            <a th:href="@{makePost}" sec:authorize="hasAuthority('BLOG_MAKE_POSTS')"><img alt="Upload post gif" title="Upload post" th:src="@{/resources/blog/img/upload.gif}"/></a>
         </span>
     </div>
 </div>

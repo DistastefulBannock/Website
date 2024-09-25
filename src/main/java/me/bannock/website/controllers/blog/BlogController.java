@@ -3,6 +3,7 @@ package me.bannock.website.controllers.blog;
 import brave.Tracer;
 import jakarta.servlet.http.HttpServletResponse;
 import me.bannock.website.security.Roles;
+import me.bannock.website.services.blog.Asset;
 import me.bannock.website.services.blog.BlogService;
 import me.bannock.website.services.blog.BlogServiceException;
 import me.bannock.website.services.blog.Post;
@@ -20,15 +21,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.ByteArrayOutputStream;
@@ -36,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -73,7 +80,7 @@ public class BlogController {
                 uidToAuthorsMappings.put(post.authorId(), author);
             } catch (UserServiceException e) {
                 throw new WrappedBlogServiceException(
-                        new BlogServiceException(e.getMessage(), e.getUserFriendlyError()), model);
+                        new BlogServiceException(e.getUserFriendlyError(), e.getMessage()), model);
             }
         }
 
@@ -156,7 +163,49 @@ public class BlogController {
     @Secured(Roles.BlogServiceRoles.MAKE_POSTS)
     public String getMakePost(Model model){
         model.addAttribute("blogHeaderTitle", "Create a new post");
+        model.addAttribute("formPojo", new PostFormPojo());
         return "blog/makePost";
+    }
+
+    @PostMapping("/makePost")
+    @Secured(Roles.BlogServiceRoles.MAKE_POSTS)
+    public void postMakePost(HttpServletResponse response, @ModelAttribute PostFormPojo postForm, Model model){
+        String[] splitTags = postForm.getTags().split(",");
+        for (int i = 0; i < splitTags.length; i++)
+            splitTags[i] = splitTags[i].trim();
+
+        Asset indexAsset;
+        List<Asset> postAssets = new ArrayList<>();
+        try{
+            indexAsset = new Asset(postForm.getIndex().getOriginalFilename(), postForm.getIndex().getInputStream());
+            for (MultipartFile asset : postForm.getAssets()){
+                postAssets.add(new Asset(asset.getOriginalFilename(), asset.getInputStream()));
+            }
+        } catch (IOException e) {
+            logger.warn("User attempted to upload file but something went wrong", e);
+            throw new WrappedBlogServiceException(
+                    new BlogServiceException("Something went wrong while uploading files"), model);
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        long authorId;
+        try {
+            authorId = userService.getUserWithName(auth.getName()).getId();
+        } catch (UserServiceException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            Post post = blogService.makePost(postForm.getTitleHtml(), postForm.getTitlePlaintext(), authorId, splitTags,
+                    indexAsset, postAssets.toArray(new Asset[0]));
+            logger.info("User created new blog post, authorId={}, postId={}", authorId, post.postId());
+            response.sendRedirect("%s/".formatted(post.postId()));
+        } catch (BlogServiceException e) {
+            logger.warn("Something went wrong while attempting to make new blog post, authorId={}", authorId, e);
+            throw new WrappedBlogServiceException(e, model);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
