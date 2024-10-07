@@ -9,6 +9,8 @@
 <div th:replace="~{/core/fragments/header.html :: header}"></div>
 
 <form method="POST" th:action="@{/core/processLogin}">
+    <pre style="color: red; text-align: center; white-space: wrap;" th:if="${loginError != null}"
+         th:text="'Something went wrong while logging in: ' + ${loginError}"></pre>
     <h1>Login: </h1>
     <div>
         <label for="email">Email: </label><br/>

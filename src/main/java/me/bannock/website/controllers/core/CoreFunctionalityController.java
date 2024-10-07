@@ -22,12 +22,12 @@ public class CoreFunctionalityController {
 //    private final UserService userService;
 
     @GetMapping(path = "/")
-    public String getIndex(Model model){
+    public String getIndex(){
         return "core/home";
     }
 
     @GetMapping(path = "/login")
-    public String getLogin(){
+    public String getLogin(Model model){
         return "core/login";
     }
 

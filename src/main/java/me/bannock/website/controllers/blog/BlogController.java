@@ -59,23 +59,20 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Controller
 @RequestMapping("/blog")
 public class BlogController {
 
     @Autowired
-    public BlogController(BlogService blogService, UserService userService, ObjectMapper objectMapper){
+    public BlogController(BlogService blogService, UserService userService){
         this.blogService = blogService;
         this.userService = userService;
-        this.objectMapper = objectMapper;
     }
 
     private final Logger logger = LogManager.getLogger();
     private final BlogService blogService;
     private final UserService userService;
-    private final ObjectMapper objectMapper;
 
     @Autowired
     private Tracer tracer;
@@ -135,7 +132,6 @@ public class BlogController {
     @GetMapping("/{postId}/")
     public String getPost(@PathVariable(name = "postId") long postId,
                           @RequestParam(name = "commentPage", required = false, defaultValue = "-1") int commentPage,
-                          @ModelAttribute(name = "commentFormErrorMessage") String commentFormErrorMessage,
                           @ModelAttribute(name = "commentFormPojo") CommentFormPojo commentForm,
                           Model model){
         String indexData;
@@ -222,8 +218,6 @@ public class BlogController {
                 filteredComments.add(comment);
             }
 
-            if (commentFormErrorMessage.isBlank())
-                model.addAttribute("commentFormErrorMessage", null);
             model.addAttribute("comments", filteredComments);
             model.addAttribute("commentAuthorIdsToUserMappings", uidToUserMappings);
             model.addAttribute("currentCommentPage", commentPage);
@@ -388,23 +382,31 @@ public class BlogController {
         }
 
         User user = null;
-        Objects.requireNonNull(commentForm.getDummyAccountEmailAddress());
-        if (!commentForm.getDummyAccountEmailAddress().isBlank()){
-            try {
-                user = userService.getUserWithEmail(commentForm.getDummyAccountEmailAddress());
-                if (!user.isUnclaimedAccount())
-                    throw new CommentFormException("Please login to your account using your password",
-                            "User could not make comment because their account is claimed", model, commentForm);
-                if (user.isAccountDisabled())
-                    throw new CommentFormException("Unable to post comment because your account has been disabled",
-                            "User could not make comment because their account is disabled", model, commentForm);
-            } catch (UserServiceException e) {
-                logger.warn("Failed to get user account for comment using provided email, " +
-                        "one may be created later in the flow", e);
-            }
+        if (commentForm.getDummyAccountEmailAddress() == null || commentForm.getDummyAccountEmailAddress().isBlank()){
+            throw new CommentFormException("Please either enter an email address into the form or login", model, commentForm);
         }
+        try {
+            user = userService.getUserWithEmail(commentForm.getDummyAccountEmailAddress());
+            if (!user.isUnclaimedAccount()){
+                logger.info("User failed to post comment because their account is claimed but they " +
+                        "are not logged in, user={}", user);
+                throw new CommentFormException("Please login to your account using your password",
+                        "User could not make comment because their account is claimed", model, commentForm);
+            }
+            if (user.isAccountDisabled()){
+                logger.info("User failed to post comment because their account is disabled, user={}", user);
+                throw new CommentFormException("Unable to post comment because your account is disabled",
+                        "User could not make comment because their account is disabled", model, commentForm);
+            }
+        } catch (UserServiceException e) {
+            logger.warn("Failed to get user account for comment using provided email, " +
+                    "one may be created later in the flow", e);
+        }
+
         if (user == null){
-            if (commentForm.getDummyAccountUsername().isBlank()){
+            if (commentForm.getDummyAccountUsername() == null || commentForm.getDummyAccountUsername().isBlank()){
+                logger.info("User failed to post comment because they did not provide a username " +
+                        "for their dummy account, commentForm={}", commentForm);
                 throw new CommentFormException("Please provide a username in the form to post comments",
                         model, commentForm);
             }
@@ -412,11 +414,15 @@ public class BlogController {
                 user = userService.registerDummyUser(commentForm.getDummyAccountUsername(),
                         commentForm.getDummyAccountEmailAddress(), authorIp);
             } catch (UserServiceException e) {
+                logger.warn("An error occurred while attempting to register a new dummy user, commentForm={}",
+                        commentForm, e);
                 throw new CommentFormException(e.getUserFriendlyError(), e.getMessage(), model, commentForm);
             }
         }
 
         if (user == null){
+            logger.warn("User could not post comment because server is unable to create a dummy user to post " +
+                    "comment with, commentForm={}", commentForm);
             throw new CommentFormException("Failed to create user to post comment with. Please try again later.", "Something went wrong",
                     model, commentForm);
         }
@@ -425,6 +431,7 @@ public class BlogController {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(newAuth);
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+        logger.info("Logged user into dummy account, user={}, commentForm={}", user, commentForm);
         return user.getId();
     }
 
@@ -433,7 +440,7 @@ public class BlogController {
                                                    RedirectAttributes redirectAttributes,
                                                    CommentFormException commentFormException) throws IOException {
         redirectAttributes.addFlashAttribute("commentFormPojo", commentFormException.getCommentFormPojo());
-        redirectAttributes.addAttribute("commentFormErrorMessage", commentFormException.getUserFriendlyMessage());
+        redirectAttributes.addFlashAttribute("commentFormErrorMessage", commentFormException.getUserFriendlyMessage());
         logger.warn("User attempted to submit form but something went wrong", commentFormException);
         return new RedirectView("%s/#commentBox".formatted(commentFormException.getPostId()), true);
     }

@@ -1,5 +1,6 @@
 package me.bannock.website.security.authentication;
 
+import me.bannock.website.services.user.User;
 import me.bannock.website.services.user.UserService;
 import me.bannock.website.services.user.UserServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
-            return new UserDetailsImpl(userService.getUserWithEmail(username));
+            User user = userService.getUserWithEmail(username);
+            return new UserDetailsImpl(user);
         } catch (UserServiceException e) {
             throw new UsernameNotFoundException("Could not find user with provided name: %s".formatted(e.getUserFriendlyError()), e);
         }

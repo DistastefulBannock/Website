@@ -1,5 +1,6 @@
 package me.bannock.website.security;
 
+import me.bannock.website.security.authentication.AuthFailHandlerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -27,8 +29,15 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public AuthenticationFailureHandler authenticationFailureHandler(){
+        return new AuthFailHandlerImpl();
+    }
+
+    @Bean
     @Autowired
-    public DefaultSecurityFilterChain configureHttp(HttpSecurity security) throws Exception {
+    public DefaultSecurityFilterChain configureHttp(HttpSecurity security,
+                                                    AuthenticationFailureHandler authFailureHandler) throws Exception {
         security.sessionManagement(sessionManagement -> {
             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
         });
@@ -47,7 +56,9 @@ public class SecurityConfiguration {
                 .defaultSuccessUrl("/?loggedIn=true", true)
                 .usernameParameter("email")
                 .passwordParameter("password")
-                .loginPage("/core/login").permitAll()
+                .loginPage("/core/login")
+                .failureHandler(authFailureHandler)
+                .permitAll()
         );
 
         security.logout(logoutConfigurer -> logoutConfigurer
