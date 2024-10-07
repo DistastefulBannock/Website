@@ -49,7 +49,7 @@ public class UserEntity implements Serializable {
                       boolean disabled, boolean shadowBanned,
                       boolean unclaimed) {
         Objects.requireNonNull(name);
-        if (password == null && unclaimed)
+        if (password == null && !unclaimed)
             throw new IllegalArgumentException("Claimed accounts must have a set password");
         Objects.requireNonNull(email);
         Objects.requireNonNull(lastIp);

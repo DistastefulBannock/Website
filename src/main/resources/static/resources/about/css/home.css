@@ -1,0 +1,50 @@
+#profileCard{
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    width: 90%;
+    padding: 5% 5% 0;
+}
+
+#profileCardPfp{
+    width: 100%;
+    aspect-ratio: 1/1;
+}
+
+#profileCardPfpContainer{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#profileCardDetailsContainer{
+    display: flex;
+    flex-direction: column;
+}
+
+#profileCardDetailsContainer p{
+    margin-block-start: 0.5em;
+    margin-block-end: 0.5em;
+}
+
+#profileCard .left{
+    display: inline-block;
+    width: 30%;
+    padding-right: 10%;
+}
+
+#profileCard .right{
+    display: inline-block;
+    width: 70%;
+}
+
+.profileCardStyledLink{
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.profileCardStyledLink:visited{
+    color: var(--secondary);
+}

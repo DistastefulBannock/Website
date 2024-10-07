@@ -1,3 +1,8 @@
+:root{
+    --commentPrimaryColor: color-mix(in srgb, var(--secondary), #000000 10%);
+    --commentFormInputTextColor: color-mix(in srgb, var(--tertiary), #000000, 50%);
+}
+
 @media print {
     body *:not(#postContainer, #postContainer *, #footer, #footer *){
         display: none;
@@ -5,4 +10,111 @@
     #postContainer, #postContainer * {
         display: block; !important;
     }
+}
+
+#commentBox{
+    display: flex;
+    flex-direction: column-reverse;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: #303030;
+}
+
+#commentDisplayContainer{
+    border-left: inset var(--commentPrimaryColor) 1px;
+    padding-top: 15px;
+}
+
+#commentForm{
+    border: solid 1px var(--secondary);
+    display: flex;
+}
+
+#commentFormInputs{
+    width: 90%;
+    border-right: 1px solid var(--secondary);
+}
+
+#commentFormInputs div{
+    border-bottom: 1px solid var(--secondary);
+}
+
+#commentFormInputs div:last-child{
+    border-bottom: none;
+}
+
+#commentFormSubmitContainer{
+    width: 10%;
+}
+
+#commentFormSubmitInput{
+    width: 100%;
+    height: 100%;
+    background-color: #00000000;
+    color: var(--commentFormInputTextColor);
+}
+
+#commentFormSubmitInput:hover{
+    cursor: pointer;
+}
+
+#noCommentsText{
+    text-align: center;
+    font-family: monospace;
+}
+
+.terminalText{
+    background-color: #424242;
+    font-family: monospace;
+    padding: 4px;
+    width: fit-content;
+}
+
+.comment{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.commentHeader{
+    width: 100%;
+}
+
+.commentHeader *{
+    margin: 0;
+    color: var(--commentPrimaryColor);
+}
+
+.commentContentContainer{
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    margin-top: 0;
+    margin-bottom: 0.5em;
+}
+
+.commentContent{
+    margin-top: 0;
+    padding-left: 20px;
+    width: auto;
+    white-space: pre;
+}
+
+.commentFormInput{
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #00000000;
+    color: var(--commentFormInputTextColor);
+    border: none;
+    padding-left: 10px;
+    font-size: 1.1em;
+}
+
+.screenReaderOnly {
+    position:absolute;
+    left:-10000px;
+    top:auto;
+    width:1px;
+    height:1px;
+    overflow:hidden;
 }

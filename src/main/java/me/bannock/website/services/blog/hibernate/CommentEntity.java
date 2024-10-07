@@ -10,10 +10,22 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "blog_comments", indexes = {
-        @Index(columnList = "id", unique = true),
-        @Index(columnList = "post_id")
+        @Index(columnList = "comment_id", unique = true),
+        @Index(columnList = "post_id, deleted"),
+        @Index(columnList = "millis_posted, original_author_ip")
 })
 public class CommentEntity {
+
+    public CommentEntity(long postId, long authorId, long millisPosted, String content, String authorIp) {
+        this.postId = postId;
+        this.authorId = authorId;
+        this.millisPosted = millisPosted;
+        this.content = content;
+        this.deleted = false;
+        this.originalAuthorIp = authorIp;
+    }
+
+    public CommentEntity(){}
 
     @Id
     @GeneratedValue(generator = "blog_comment_id_seq")
@@ -35,6 +47,9 @@ public class CommentEntity {
 
     @Column(name = "deleted")
     private boolean deleted;
+
+    @Column(name = "original_author_ip", nullable = false)
+    private String originalAuthorIp;
 
     public long getCommentId() {
         return commentId;
@@ -82,6 +97,14 @@ public class CommentEntity {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public String getOriginalAuthorIp() {
+        return originalAuthorIp;
+    }
+
+    public void setOriginalAuthorIp(String originalAuthorIp) {
+        this.originalAuthorIp = originalAuthorIp;
     }
 
 }

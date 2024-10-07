@@ -10,9 +10,7 @@ import java.util.Collection;
 public class UserDetailsImpl implements UserDetails {
 
     public UserDetailsImpl(User user){
-        if (user.isUnclaimedAccount())
-            throw new RuntimeException("Unclaimed accounts are not allowed to login");
-        if (user.getPassword().isEmpty())
+        if (user.getPassword().isEmpty() && !user.isUnclaimedAccount())
             throw new RuntimeException("Claimed accounts must have a set password in order to login");
         this.user = user;
         this.roles = user.getRoles().stream().map(SimpleGrantedAuthority::new).toList();

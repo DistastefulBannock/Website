@@ -7,6 +7,7 @@ import java.util.Arrays;
 public class PostFormPojo {
 
     private String titleHtml, titlePlaintext;
+
     /**
      * Tags for the post split with comma delimiters
      */

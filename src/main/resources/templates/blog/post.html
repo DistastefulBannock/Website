@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" >
 <head>
     <th:block th:replace="~{/core/fragments/main.html :: main}"></th:block>
     <th:block th:replace="~{/blog/fragments/main.html :: main}"></th:block>
@@ -16,9 +16,55 @@
     <p style="margin-top: 0;">
         <nobr><span class="postTag" th:each="tag : ${post.tags()}" th:text="${tag}"></span></nobr>
     </p>
-    <span>Posted by </span><pre style="display: inline;" th:text="${author.getName() + '@' + post.getFormattedPostDate()}"></pre>
+    <span>Posted by </span><span class="terminalText" th:text="${author.getName() + '@' + post.getFormattedPostDate()}"></span>
     <hr/>
     <div id="postContent"><th:block th:utext="${postIndex}"></th:block></div>
+    <hr/>
+</div>
+
+<!-- Comments is in order from oldest to most recent.
+Elements in this box are displayed in reverse to account for this-->
+<div id="commentBox">
+    <div id="commentDisplayContainer" th:if="${!comments.isEmpty()}">
+        <div class="comment" th:each="comment : ${comments}">
+            <div class="commentHeader">
+                <span class="terminalText">
+                    <span th:text="${commentAuthorIdsToUserMappings.get(comment.authorId()).getName()} + '@' + ${comment.getFormattedPostDate()}"></span>
+                    <img th:if="${!commentAuthorIdsToUserMappings.get(comment.authorId()).isUnclaimedAccount()}"
+                         th:src="@{/resources/blog/img/verified.gif}"
+                         alt="Claimed account checkmark" title="This account is claimed, meaning the user secured their account with a password"/>
+                </span>
+            </div>
+            <div class="commentContentContainer">
+                <p class="commentContent terminalText" th:text="${comment.content()}"></p>
+            </div>
+        </span>
+        </div>
+    </div>
+    <p id="noCommentsText" th:if="${comments.isEmpty()}">/\ Nobody's commented on this yet. You should be the first! /\</p>
+    <form id="commentForm" th:method="POST" th:action="@{/blog/makeComment}" th:object="${commentFormPojo}">
+        <div id="commentFormInputs">
+            <pre style="color: red; text-align: center; white-space: wrap;" th:if="${commentFormErrorMessage != null}"
+                 th:text="'Something went wrong while submitting your comment: ' + ${commentFormErrorMessage}"></pre>
+            <hr th:if="${commentFormErrorMessage != null}"/>
+            <div>
+                <textarea class="commentFormInput" th:maxlength="${@environment.getProperty('bannock.blog.maxCommentContentSize')}" maxlength="" style="resize: vertical;" th:field="*{content}" id="commentFormContentInput" placeholder="Write your comment here"></textarea>
+                <label class="screenReaderOnly" for="commentFormContentInput"></label>
+            </div>
+            <div sec:authorize="isAnonymous()">
+                <input type="text" class="commentFormInput" th:field="*{dummyAccountEmailAddress}" id="commentFormEmailInput" placeholder="Email (not verified; no mailing lists)"/>
+                <label class="screenReaderOnly" for="commentFormEmailInput">Email (not verified; no mailing lists)</label>
+            </div>
+            <div sec:authorize="isAnonymous()">
+                <input type="text" class="commentFormInput" th:field="*{dummyAccountUsername}" id="commentFormUsernameInput" placeholder="Username (Optional if email has been used before)"/>
+                <label class="screenReaderOnly" for="commentFormUsernameInput">Username (Optional if email has been used before)</label>
+            </div>
+            <input type="hidden" th:field="*{postId}"/>
+        </div>
+        <div id="commentFormSubmitContainer">
+            <input type="submit" id="commentFormSubmitInput"/>
+        </div>
+    </form>
 </div>
 
 <div th:replace="~{/blog/fragments/footer.html :: footer}"></div>

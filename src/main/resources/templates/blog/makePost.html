@@ -10,7 +10,7 @@
 <div th:replace="~{/core/fragments/header.html :: header}"></div>
 <div th:replace="~{/blog/fragments/header.html :: header}"></div>
 
-<form id="makePostForm" method="POST" enctype="multipart/form-data" th:action="@{/blog/makePost}" th:object="${formPojo}">
+<form id="makePostForm" th:method="POST" enctype="multipart/form-data" th:action="@{/blog/makePost}" th:object="${formPojo}">
     <div>
         <label for="titleHtml">HTML Title: </label>
         <input id="titleHtml" type="text" minlength="3" maxlength="256" th:field="*{titleHtml}"/>
@@ -28,7 +28,7 @@
         <input id="postIndex" type="file" th:field="*{index}">
     </div>
     <div>
-        <label for="postAssets">Index file: </label>
+        <label for="postAssets">Asset files: </label>
         <input id="postAssets" type="file" multiple th:field="*{assets}">
     </div>
     <div>

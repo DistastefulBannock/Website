@@ -8,13 +8,10 @@
     <img src="/resources/core/img/header.png" usemap="#headerMap" draggable="false" id="headerImage" alt="Background image for header">
     <map name="headerMap">
         <area target="" alt="Home" title="Home" href="/core/" coords="249, 166, 4, 122" shape="rect">
-
         <th:block th:each="link : ${headerLinksToPositions.keySet()}">
             <area target="" th:alt="${link.getDisplayText()}" th:title="${link.getDisplayText()}" th:href="${link.getRedirect()}"
                   th:coords="${headerLinksToPositions.get(link)[0]} + ',' + ${headerLinksToPositions.get(link)[1]} + ',' + ${headerLinksToPositions.get(link)[0] + link.getWidth()} + ',' + ${headerLinksToPositions.get(link)[1] + link.getHeight()}" shape="rect">
         </th:block>
-<!--        <area target="" alt="Login" title="Login" href="/core/login" coords="649, 54, 707, 94" shape="rect" sec:authorize="isAnonymous()">-->
-<!--        <area target="" alt="Blog" title="Blog" href="/blog/" coords="349, 40, 481, 64" shape="rect">-->
     </map>
 
     <div id="fakeImageMapLinksParent">
@@ -24,8 +21,6 @@
         <th:block th:each="link : ${headerLinksToPositions.keySet()}">
             <p class="fakeImageMapText" th:text="${link.getDisplayText()}" th:style="'left: ' + ${headerLinksToPositions.get(link)[0]} + 'px; top: ' + ${headerLinksToPositions.get(link)[1]} + 'px;'">Login</p>
         </th:block>
-<!--        <p class="fakeImageMapText" style="left: 649px; top: 54px;" sec:authorize="isAnonymous()">Login</p>-->
-<!--        <p class="fakeImageMapText" style="left: 349px; top: 24px;">The ramblings</p>-->
     </div>
 </header>
 </body>

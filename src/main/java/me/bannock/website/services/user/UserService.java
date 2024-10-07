@@ -1,5 +1,8 @@
 package me.bannock.website.services.user;
 
+import java.util.Arrays;
+import java.util.List;
+
 public interface UserService {
 
     /**
@@ -8,6 +11,24 @@ public interface UserService {
      * @throws UserServiceException if something goes wrong while getting hte user
      */
     User getUserWithId(long id) throws UserServiceException;
+
+    /**
+     * Bulk method to get many users using their IDs.
+     * Not all the ids provided are guaranteed to be returned
+     * @param ids The ids to get the users for
+     * @return Users that matched the provided IDs
+     */
+    default List<User> getManyUsersWithIds(long... ids){
+        return getManyUsersWithIds(Arrays.stream(ids).boxed().toList());
+    }
+
+    /**
+     * Bulk method to get many users using their IDs.
+     * Not all the ids provided are guaranteed to be returned
+     * @param ids The ids to get the users for
+     * @return Users that matched the provided IDs
+     */
+    List<User> getManyUsersWithIds(List<Long> ids);
 
     /**
      * Gets a user using their username and password

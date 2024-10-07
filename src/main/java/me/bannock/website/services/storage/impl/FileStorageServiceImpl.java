@@ -67,7 +67,7 @@ public class FileStorageServiceImpl implements StorageService {
         }catch(FileNotFoundException e){
             logger.warn("Could not find file to load data from, category={}, identifier={}, filePath={}",
                     category, identifier, save.getAbsolutePath());
-            throw new RuntimeException(e);
+            throw e;
         }
     }
 

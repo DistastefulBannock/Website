@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{/core/fragments/main.html :: main}"></div>
+    <link rel="stylesheet" th:href="@{/resources/about/css/home.css}">
+    <title>Home</title>
+</head>
+<body>
+<div th:replace="~{/core/fragments/header.html :: header}"></div>
+
+<div id="profileCard">
+    <div class="left">
+        <div id="profileCardPfpContainer">
+            <img id="profileCardPfp" th:src="@{/resources/about/img/icon 1.png}" alt="Picture of site owner's fursona" />
+        </div>
+    </div>
+    <div class="right">
+        <div id="profileCardDetailsContainer">
+            <h3>Hello! 👋</h3>
+            <p>I'm Bannock, a self-taught Java developer and engineer.</p>
+            <p>This is my personal website that I built using Spring boot. It utilizes Loki for log aggregation,
+                Grafana for observability, and Zipkin for tracing. The front end is done with plain html/css/js.
+                It was designed with the philosophy that the site should
+                be usable without JS, navigable using only the keyboard, and with a look and feel that's fun/amateur as
+                opposed to the simple card layout with an attempted professional look used by most people use nowadays.</p>
+            <h4 style="margin: 0.5em 0;">My socials, most to least checked:</h4>
+            <ul style="margin: 0.5em;">
+                <li>Discord: DistastefulBannock</li>
+                <li><a class="profileCardStyledLink" href="https://twitter.com/@DistastefulBnok" target="_blank">Click for Twitter</a></li>
+                <li><a class="profileCardStyledLink" href="https://github.com/DistastefulBannock" target="_blank">Click for GitHub</a></li>
+                <li><a class="profileCardStyledLink" href="https://steamcommunity.com/id/DistastefulBannock/" target="_blank">Click for Steam</a></li>
+                <li><a class="profileCardStyledLink" href="https://t.me/DistastefulBannock" target="_blank">Click for Telegram</a></li>
+                <li><a class="profileCardStyledLink" href="mailto:DistastefulBannock@gmail.com" target="_blank">Click for email (or right click to copy)</a></li>
+            </ul>
+            <p>I try my best to make this place as interesting as possible so please feel free to take a look around.</p>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{/core/fragments/footer.html :: footer}"></div>
+</body>
+</html>

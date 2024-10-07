@@ -15,7 +15,13 @@
             <th:block th:if="${post != null}">
                 <button class="jsOnly" title="Print post" id="blogHeaderPostPrintButton" onclick="window.print();"><img alt="Printer gif" title="Print page" th:src="@{/resources/blog/img/printer.gif}"/></button>
             </th:block>
-            <a th:href="@{makePost}" sec:authorize="hasAuthority('BLOG_MAKE_POSTS')"><img alt="Upload post gif" title="Upload post" th:src="@{/resources/blog/img/upload.gif}"/></a>
+            <form id="deletePostForm"
+                  th:method="POST" th:action="@{/blog/deletePost}"
+                  th:if="${post != null}" sec:authorize="hasAuthority('BLOG_DELETE_POSTS')">
+                <input type="hidden" th:name="postId" th:value="${post.postId()}"/>
+                <a onclick="document.getElementById('deletePostForm').submit();"><img alt="Delete post gif" title="Delete post" th:src="@{/resources/blog/img/trash.gif}"/></a>
+            </form>
+            <a th:href="@{/blog/makePost}" sec:authorize="hasAuthority('BLOG_MAKE_POSTS')"><img alt="Upload post gif" title="Upload post" th:src="@{/resources/blog/img/upload.gif}"/></a>
         </span>
     </div>
 </div>

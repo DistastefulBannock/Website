@@ -51,6 +51,14 @@ public interface BlogService {
                   String[] tags, Asset index, Asset... assets) throws BlogServiceException;
 
     /**
+     * Deletes a given post
+     * @param postId The id of the post that's to be deleted
+     * @throws BlogServiceException If something goes wrong while deleting the post
+     */
+    @Secured(Roles.BlogServiceRoles.DELETE_POSTS)
+    void deletePost(long postId) throws BlogServiceException;
+
+    /**
      * @param page The page number
      * @return The featured posts to display on the blog home page
      */
@@ -61,27 +69,36 @@ public interface BlogService {
      * @return The total amount of pages of featured posts
      */
     @Secured(Roles.BlogServiceRoles.READ_POSTS)
-    int getFeaturePostTotalPages();
-
-    /**
-     * Gets some of the comments for a given post
-     * @param postId The post id to get the comments for
-     * @param page The page of comments to get; starts at 0
-     * @return An array containing a list of the comments for the specified page for the post
-     * @throws BlogServiceException If something goes wrong while getting the comments
-     */
-    @Secured(Roles.BlogServiceRoles.READ_COMMENTS)
-    Comment[] getComments(long postId, int page) throws BlogServiceException;
+    int getFeaturedPostsTotalPages();
 
     /**
      * Creates a new comment under a given post
      * @param postId The post to make the comment under
      * @param commentAuthorId The user id of the user making the comment
      * @param content The content to store in the comment
+     * @param commentAuthorIp The ip of the comment's author
      * @return The created comment
      * @throws BlogServiceException If something goes wrong while making the comment
      */
     @Secured(Roles.BlogServiceRoles.MAKE_COMMENTS)
-    Comment makeComment(long postId, long commentAuthorId, String content) throws BlogServiceException;
+    Comment makeComment(long postId, long commentAuthorId, String content, String commentAuthorIp) throws BlogServiceException;
+
+    /**
+     * Gets some of the comments for a given post
+     * @param postId The post id to get the comments for
+     * @param page The page of comments to get; starts at 0. Oldest comments are on the lowest page
+     * @return An array containing a list of the comments for the specified page for the post
+     * @throws BlogServiceException If something goes wrong while getting the comments
+     */
+    @Secured(Roles.BlogServiceRoles.READ_COMMENTS)
+    List<Comment> getComments(long postId, int page) throws BlogServiceException;
+
+    /**
+     * @param postId The id of the post that the comments are for
+     * @return The total amount comment pages for a given post
+     * @throws BlogServiceException If something goes wrong while getting the total amount of comment pages
+     */
+    @Secured(Roles.BlogServiceRoles.READ_COMMENTS)
+    int getCommentsTotalPages(long postId) throws BlogServiceException;
 
 }

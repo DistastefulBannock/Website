@@ -13,14 +13,14 @@
 <h1 th:if="${userFriendlyMessage != null}" th:text="${userFriendlyMessage}"></h1>
 <p>Please retry your action at a later time.</p>
 <hr/>
-<button class="jsOnly" id="tIdToggle" style="background-color: var(--surface); color: var(--secondary);"
+<button class="jsOnly" id="tIdToggle" style="background-color: var(--surface); color: var(--primary); font-size: 1.35em;"
         onclick="document.getElementById('tId').style.display = ''; document.getElementById('tIdToggle').style.display = 'none';"
 >
     Oh but glorious error page! I've already done what you've commanded of me but am still facing issues!
 </button>
 <div class="jsOnly" style="margin-bottom: 5px;">
     <div id="tId" style="display: none; background-color: black;">
-        <p th:text="'Take this trace id, persistent one, for when presented to ' + ${@environment.getProperty('bannock.contact.support')} + ', the gnomes that upkeep this part of the realm, your query will be answered!'"></p>
+        <p th:text="'Take this trace id, persistent one, for when presented to ' + ${@environment.getProperty('bannock.contact.support')} + ', the dog that upkeeps this part of the realm, your query will be answered!'"></p>
         <pre th:text="'tId=' + ${tId}"></pre>
     </div>
 </div>

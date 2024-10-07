@@ -12,6 +12,6 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
      * @param pageable The page
      * @return a given amount of posts ordered the date they were posted desc
      */
-    Page<PostEntity> findByOrderByMillisPostedDesc(Pageable pageable);
+    Page<PostEntity> findByDeletedFalseOrderByMillisPostedDesc(Pageable pageable);
 
 }

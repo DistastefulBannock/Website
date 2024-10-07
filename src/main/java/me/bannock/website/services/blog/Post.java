@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public record Post(long postId, String titleHtml, String titlePlaintext,
                    long authorId, long millisPosted, String[] tags,
-                   String... assetFilePaths) {
+                   String[] assetFilePaths, boolean deleted) {
 
     /**
      * @param postId The post's unique id
@@ -58,6 +58,7 @@ public record Post(long postId, String titleHtml, String titlePlaintext,
                 ", authorId=" + authorId +
                 ", millisPosted=" + millisPosted +
                 ", assetFilePaths=" + Arrays.toString(assetFilePaths) +
+                ", deleted=" + deleted +
                 '}';
     }
 

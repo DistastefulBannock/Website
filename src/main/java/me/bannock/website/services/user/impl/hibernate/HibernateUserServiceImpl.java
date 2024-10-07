@@ -51,6 +51,13 @@ public class HibernateUserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<User> getManyUsersWithIds(List<Long> ids) {
+        List<UserEntity> userEntity = userRepository.findByIdIsIn(ids);
+        return userEntity.stream().map(this::toDto).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public User getUserWithNameAndPassword(String name, String password) throws UserServiceException {
         Optional<UserEntity> userEntity = userRepository.findByName(name);
 
@@ -112,9 +119,26 @@ public class HibernateUserServiceImpl implements UserService {
     public User registerDummyUser(String name, String email, String ip) throws UserServiceException {
         if (!dummyRegistrationsEnabled)
             throw new UserServiceException("Failed to created account because registrations are closed at this time");
+
+        if (!name.matches("[0-9A-Za-z_-]+")){
+            logger.warn("Could not create dummy user because their name did not pass the validation regex");
+            throw new UserServiceException("Username contained invalid characters. " +
+                    "Please only use latin letters a-Z, numbers, underscores(_), and dashs(-)");
+        }
+
+        if (userRepository.findByName(name).isPresent()){
+            logger.warn("Could not create dummy user because their desired username is taken, name={}", name);
+            throw new UserServiceException("Username is already taken");
+        }
+        if (userRepository.findByEmail(email).isPresent()){
+            logger.warn("Could not create dummy user because their email is already registered, email={}", email);
+            throw new UserServiceException("Email is already registered");
+        }
+
         UserEntity userEntity = new UserEntity(name, email, ip);
         userEntity.getRoles().addAll(List.of(Roles.DEFAULT_USER_ROLES));
         userRepository.save(userEntity);
+        logger.info("Created new dummy user, user={}", userEntity);
         return toDto(userEntity);
     }
 
@@ -123,6 +147,7 @@ public class HibernateUserServiceImpl implements UserService {
     public User registerUser(User user) throws UserServiceException {
         if (!registrationsEnabled)
             throw new UserServiceException("Failed to created account because registrations are closed at this time");
+        // TODO: Validations
         UserEntity userEntity = toEntity(user);
         List<String> roles = new ArrayList<>(userEntity.getRoles());
         roles.addAll(List.of(Roles.DEFAULT_USER_ROLES));

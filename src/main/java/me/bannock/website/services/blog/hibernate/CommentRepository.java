@@ -1,9 +1,8 @@
 package me.bannock.website.services.blog.hibernate;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 
 public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
 
@@ -13,6 +12,6 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
      * @param pageable The page configuration for pagination
      * @return A list containing all the comments under the given post
      */
-    List<CommentEntity> findByPostId(long postId, Pageable pageable);
+    Page<CommentEntity> findByPostIdAndDeletedFalseOrderByMillisPostedDesc(long postId, Pageable pageable);
 
 }

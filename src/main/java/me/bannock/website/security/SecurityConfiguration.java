@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -28,9 +29,13 @@ public class SecurityConfiguration {
     @Bean
     @Autowired
     public DefaultSecurityFilterChain configureHttp(HttpSecurity security) throws Exception {
+        security.sessionManagement(sessionManagement -> {
+            sessionManagement.sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
+        });
+
         security.authorizeHttpRequests(authManagerRegistry -> authManagerRegistry.requestMatchers(
                 "/", "/core/", "/core/login*", "/core/register*",
-                "/core/logout*", "/error*", "/resources/**", "/blog/**"
+                "/error*", "/resources/**", "/blog/**", "/about/**"
         ).permitAll().anyRequest().authenticated());
 
         security.anonymous(anonymousConfigurer -> {
@@ -40,12 +45,17 @@ public class SecurityConfiguration {
         // Configure login
         security.formLogin(loginConfigurer -> loginConfigurer.loginProcessingUrl("/core/processLogin")
                 .defaultSuccessUrl("/?loggedIn=true", true)
-                .usernameParameter("name")
+                .usernameParameter("email")
                 .passwordParameter("password")
                 .loginPage("/core/login").permitAll()
         );
 
-        security.logout(logoutConfigurer -> logoutConfigurer.logoutUrl("/core/logout").clearAuthentication(true));
+        security.logout(logoutConfigurer -> logoutConfigurer
+                .logoutUrl("/core/logout")
+                .logoutSuccessUrl("/")
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID")
+        );
 
         security.csrf(Customizer.withDefaults());
 

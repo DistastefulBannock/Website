@@ -43,3 +43,11 @@
 #blogHeaderPostPrintButton:hover{
     cursor: pointer;
 }
+
+#deletePostForm{
+    display: inline;
+}
+
+#deletePostForm:hover{
+    cursor: pointer;
+}

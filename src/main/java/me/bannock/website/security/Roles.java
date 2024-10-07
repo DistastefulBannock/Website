@@ -20,6 +20,7 @@ public final class Roles {
             StorageServiceRoles.LOAD_DATA,
             BlogServiceRoles.READ_POSTS,
             BlogServiceRoles.MAKE_POSTS,
+            BlogServiceRoles.DELETE_POSTS,
             BlogServiceRoles.READ_COMMENTS,
             BlogServiceRoles.MAKE_COMMENTS
     };
@@ -32,6 +33,7 @@ public final class Roles {
     public static final class BlogServiceRoles{
         public static final String READ_POSTS = "BLOG_READ_POSTS";
         public static final String MAKE_POSTS = "BLOG_MAKE_POSTS";
+        public static final String DELETE_POSTS = "BLOG_DELETE_POSTS";
         public static final String READ_COMMENTS = "BLOG_READ_COMMENTS";
         public static final String MAKE_COMMENTS = "BLOG_MAKE_COMMENTS";
     }
