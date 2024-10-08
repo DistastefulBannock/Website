@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <div th:replace="~{/core/fragments/main.html :: main}"></div>
+    <div th:replace="~{core/fragments/main.html :: main}"></div>
     <title>Login</title>
 </head>
 <body>
 
-<div th:replace="~{/core/fragments/header.html :: header}"></div>
+<div th:replace="~{core/fragments/header.html :: header}"></div>
 
 <form method="POST" th:action="@{/core/processLogin}">
     <pre style="color: red; text-align: center; white-space: wrap;" th:if="${loginError != null}"
@@ -27,7 +27,7 @@
     <a th:href="@{/core/register}"><small>Don't have an account?</small></a>
 </form>
 
-<div th:replace="~{/core/fragments/footer.html :: footer}"></div>
+<div th:replace="~{core/fragments/footer.html :: footer}"></div>
 
 </body>
 </html>

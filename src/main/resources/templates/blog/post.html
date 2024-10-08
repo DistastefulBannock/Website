@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" >
 <head>
-    <th:block th:replace="~{/core/fragments/main.html :: main}"></th:block>
-    <th:block th:replace="~{/blog/fragments/main.html :: main}"></th:block>
+    <th:block th:replace="~{core/fragments/main.html :: main}"></th:block>
+    <th:block th:replace="~{blog/fragments/main.html :: main}"></th:block>
     <link rel="stylesheet" th:href="@{/resources/blog/css/post.css}">
     <meta name="keywords" th:content="${seoKeywords}">
     <title th:text="'Bnok Blog - ' + ${post.titlePlaintext()}"></title>
 </head>
 <body>
-<div th:replace="~{/core/fragments/header.html :: header}"></div>
-<div th:replace="~{/blog/fragments/header.html :: header}"></div>
+<div th:replace="~{core/fragments/header.html :: header}"></div>
+<div th:replace="~{blog/fragments/header.html :: header}"></div>
 
 <div style="overflow-x: hidden; width: 100%;" id="postContainer">
     <h2 th:utext="${post.titleHtml()}"></h2>
@@ -67,8 +67,8 @@ Elements in this box are displayed in reverse to account for this-->
     </form>
 </div>
 
-<div th:replace="~{/blog/fragments/footer.html :: footer}"></div>
-<div th:replace="~{/core/fragments/footer.html :: footer}"></div>
+<div th:replace="~{blog/fragments/footer.html :: footer}"></div>
+<div th:replace="~{core/fragments/footer.html :: footer}"></div>
 
 
 </body>

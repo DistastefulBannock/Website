@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:replace="~{/core/fragments/main.html :: main}"></th:block>
-    <th:block th:replace="~{/blog/fragments/main.html :: main}"></th:block>
+    <th:block th:replace="~{core/fragments/main.html :: main}"></th:block>
+    <th:block th:replace="~{blog/fragments/main.html :: main}"></th:block>
     <link rel="stylesheet" th:href="@{/resources/blog/css/home.css}">
     <title>Blog</title>
 </head>
 <body>
-<div th:replace="~{/core/fragments/header.html :: header}"></div>
-<div th:replace="~{/blog/fragments/header.html :: header}"></div>
+<div th:replace="~{core/fragments/header.html :: header}"></div>
+<div th:replace="~{blog/fragments/header.html :: header}"></div>
 
 <!--<h1>Featured Posts: </h1>-->
 <div id="featuredPosts">
@@ -21,7 +21,7 @@
     </a>
 </div>
 
-<div th:replace="~{/blog/fragments/footer.html :: footer}"></div>
-<div th:replace="~{/core/fragments/footer.html :: footer}"></div>
+<div th:replace="~{blog/fragments/footer.html :: footer}"></div>
+<div th:replace="~{core/fragments/footer.html :: footer}"></div>
 </body>
 </html>
