@@ -44,7 +44,8 @@ public class SecurityConfiguration {
 
         security.authorizeHttpRequests(authManagerRegistry -> authManagerRegistry.requestMatchers(
                 "/", "/core/", "/core/login*", "/core/register*",
-                "/error*", "/resources/**", "/blog/**", "/about/**"
+                "/error*", "/resources/**", "/blog/**", "/about/**",
+                ".well-known/acme-challenge/**"
         ).permitAll().anyRequest().authenticated());
 
         security.anonymous(anonymousConfigurer -> {
