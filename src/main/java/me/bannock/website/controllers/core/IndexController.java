@@ -14,7 +14,11 @@ public class IndexController {
 
     @GetMapping("")
     public void getIndex(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.sendRedirect("/core/?%s".formatted(request.getQueryString()));
+        if (request.getQueryString() != null){
+            response.sendRedirect("/core/?%s".formatted(request.getQueryString()));
+        }else{
+            response.sendRedirect("/core/");
+        }
     }
 
 }
