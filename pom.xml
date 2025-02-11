@@ -10,7 +10,7 @@
     </parent>
     <groupId>me.bannock</groupId>
     <artifactId>website</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.3-SNAPSHOT</version>
     <name>website</name>
     <description>My personal website</description>
     <url>https://bannock.me/</url>

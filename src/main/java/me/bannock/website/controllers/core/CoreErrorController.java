@@ -20,4 +20,5 @@ public class CoreErrorController implements ErrorController {
                 "Something went wrong while processing your request");
         return "core/error";
     }
+
 }
