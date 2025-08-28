@@ -1,4 +1,4 @@
-package me.bannock.website.security.authentication;
+package me.bannock.website.config.security.authentication;
 
 import me.bannock.website.services.user.User;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,4 +1,4 @@
-package me.bannock.website.security.authentication;
+package me.bannock.website.config.security.authentication;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

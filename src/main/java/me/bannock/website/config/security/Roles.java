@@ -1,4 +1,4 @@
-package me.bannock.website.security;
+package me.bannock.website.config.security;
 
 public final class Roles {
 

@@ -1,6 +1,6 @@
 package me.bannock.website.services.user.impl.hibernate;
 
-import me.bannock.website.security.Roles;
+import me.bannock.website.config.security.Roles;
 import me.bannock.website.services.user.User;
 import me.bannock.website.services.user.UserService;
 import me.bannock.website.services.user.UserServiceException;

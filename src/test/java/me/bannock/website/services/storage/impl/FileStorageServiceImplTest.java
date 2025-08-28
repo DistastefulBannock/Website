@@ -1,6 +1,6 @@
 package me.bannock.website.services.storage.impl;
 
-import me.bannock.website.security.Roles;
+import me.bannock.website.config.security.Roles;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

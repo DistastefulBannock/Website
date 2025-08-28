@@ -1,6 +1,6 @@
 package me.bannock.website.services.blog.hibernate;
 
-import me.bannock.website.security.Roles;
+import me.bannock.website.config.security.Roles;
 import me.bannock.website.services.blog.Asset;
 import me.bannock.website.services.blog.BlogServiceException;
 import me.bannock.website.services.blog.Comment;

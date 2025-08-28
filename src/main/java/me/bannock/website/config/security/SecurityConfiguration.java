@@ -1,6 +1,6 @@
-package me.bannock.website.security;
+package me.bannock.website.config.security;
 
-import me.bannock.website.security.authentication.AuthFailHandlerImpl;
+import me.bannock.website.config.security.authentication.AuthFailHandlerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;

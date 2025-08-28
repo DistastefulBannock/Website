@@ -1,4 +1,4 @@
-package me.bannock.website.security.authentication;
+package me.bannock.website.config.security.authentication;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

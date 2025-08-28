@@ -1,6 +1,6 @@
 package me.bannock.website.services.blog;
 
-import me.bannock.website.security.Roles;
+import me.bannock.website.config.security.Roles;
 import org.springframework.security.access.annotation.Secured;
 
 import java.io.InputStream;
