@@ -1,7 +1,6 @@
 package me.bannock.website.controllers.blog;
 
 import brave.Tracer;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -79,6 +78,9 @@ public class BlogController {
 
     @Value("${bannock.blogController.indexCharsetName}")
     private String indexCharsetName;
+
+    @Value("${bannock.useCloudflareIpHeaderWhenAvailable}")
+    private boolean useCloudflareIpHeaderWhenAvailable;
 
     @GetMapping("/")
     public String index(@RequestParam(name = "page", required = false, defaultValue = "0") int page, Model model){
@@ -296,8 +298,12 @@ public class BlogController {
 
         Authentication auth = ControllerUtils.getAuthNoAnon();
         if (auth == null){
+            String remoteIp = request.getRemoteAddr();
+            if (useCloudflareIpHeaderWhenAvailable && request.getHeader("CF-Connecting-IP") != null){
+                remoteIp = request.getHeader("CF-Connecting-IP");
+            }
             logger.warn("User attempted to make post but was not authenticated, " +
-                    "postForm={}, remoteIp={}", postForm, request.getRemoteAddr());
+                    "postForm={}, remoteIp={}", postForm, remoteIp);
             throw new RuntimeException("You must be authorized to make this request");
         }
         long authorId;
@@ -343,11 +349,15 @@ public class BlogController {
     public void postMakeComment(HttpServletResponse response, HttpServletRequest request,
                                 @ModelAttribute CommentFormPojo commentForm, Model model)
             throws IOException, CommentFormException {
-        long authorId = getAuthorForNewComment(request.getSession(true), request.getRemoteAddr(),
-                model, commentForm);
+        String remoteIp = request.getRemoteAddr();
+        if (useCloudflareIpHeaderWhenAvailable && request.getHeader("CF-Connecting-IP") != null){
+            remoteIp = request.getHeader("CF-Connecting-IP");
+        }
+
+        long authorId = getAuthorForNewComment(request.getSession(true), remoteIp, model, commentForm);
         Comment comment;
         try {
-            comment = blogService.makeComment(commentForm.getPostId(), authorId, commentForm.getContent(), request.getRemoteAddr());
+            comment = blogService.makeComment(commentForm.getPostId(), authorId, commentForm.getContent(), remoteIp);
         } catch (BlogServiceException e) {
             throw new CommentFormException(e.getUserFriendlyError(), e.getMessage(), model, commentForm);
         }

@@ -68,23 +68,24 @@ public class HibernateAnalyticsServiceImpl implements AnalyticsService {
     @Transactional
     public void scanIp(String instanceId) {
         Objects.requireNonNull(instanceId);
-        Optional<InstanceEntity> instanceEntity = instanceRepository
+        Optional<InstanceEntity> instanceEntityOptional = instanceRepository
                 .findInstanceEntityByInstanceIdHashEqualsAndMillisExpiredGreaterThanEqual(instanceId, System.currentTimeMillis());
-        if (instanceEntity.isEmpty()){
+        if (instanceEntityOptional.isEmpty()){
             logger.warn("Ip scan requested for unknown instance id hash, instanceId={}", instanceId);
             return;
         }
-        int threatScore = ipThreatScoreService.getThreatScore(instanceEntity.get().getIp());
 
+        InstanceEntity instanceEntity = instanceEntityOptional.get();
+        int threatScore = ipThreatScoreService.getThreatScore(instanceEntity.getIp());
         Map<String, String> derivedDetails = new HashMap<>();
         derivedDetails.put("Proxy", "%b".formatted((threatScore & IpThreatScoreService.IS_PROXY) != 0));
         derivedDetails.put("Tor", "%b".formatted((threatScore & IpThreatScoreService.IS_TOR) != 0));
         derivedDetails.put("Sus ip", "%b".formatted((threatScore & IpThreatScoreService.IS_MALICIOUS) != 0));
         derivedDetails.put("Blacklisted ip", "%b".formatted((threatScore & IpThreatScoreService.IS_BLACKLISTED) != 0));
         for (String id : derivedDetails.keySet()){
-            instanceEntity.get().getDetails().add(new InstanceDetailEntity(id, derivedDetails.get(id)));
+            instanceEntity.getDetails().add(new InstanceDetailEntity(id, derivedDetails.get(id)));
         }
-        instanceRepository.save(instanceEntity.get());
+        instanceEntity = instanceRepository.saveAndFlush(instanceEntity);
     }
 
     @Override
@@ -95,14 +96,14 @@ public class HibernateAnalyticsServiceImpl implements AnalyticsService {
         Optional<InstanceEntity> instanceEntity = instanceRepository
                 .findInstanceEntityByInstanceIdHashEqualsAndMillisExpiredGreaterThanEqual(instanceId, System.currentTimeMillis());
         if (instanceEntity.isEmpty()){
-            logger.warn("Analytics data being added to valid instance id hash, instanceId={}", instanceId);
+            logger.warn("Analytics data being added to invalid instance id hash, instanceId={}", instanceId);
             return;
         }
 
         for (String id : details.keySet()){
             instanceEntity.get().getDetails().add(new InstanceDetailEntity(id, details.get(id)));
         }
-        instanceRepository.save(instanceEntity.get());
+        instanceRepository.saveAndFlush(instanceEntity.get());
     }
 
 }

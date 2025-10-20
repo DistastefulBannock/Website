@@ -6,7 +6,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.config.Customizer;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,6 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -37,7 +39,8 @@ public class SecurityConfiguration {
     @Bean
     @Autowired
     public DefaultSecurityFilterChain configureHttp(HttpSecurity security,
-                                                    AuthenticationFailureHandler authFailureHandler) throws Exception {
+                                                    AuthenticationFailureHandler authFailureHandler,
+                                                    AuthenticationSuccessHandler userAuthSuccessHandler) throws Exception {
         security.sessionManagement(sessionManagement -> {
             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
         });
@@ -45,7 +48,7 @@ public class SecurityConfiguration {
         security.authorizeHttpRequests(authManagerRegistry -> authManagerRegistry.requestMatchers(
                 "/", "/core/", "/core/login*", "/core/register*",
                 "/error*", "/resources/**", "/blog/**", "/about/**",
-                ".well-known/acme-challenge/**"
+                ".well-known/acme-challenge/**", "/analytics/callback"
         ).permitAll().anyRequest().authenticated());
 
         security.anonymous(anonymousConfigurer -> {
@@ -59,6 +62,7 @@ public class SecurityConfiguration {
                 .passwordParameter("password")
                 .loginPage("/core/login")
                 .failureHandler(authFailureHandler)
+                .successHandler(userAuthSuccessHandler)
                 .permitAll()
         );
 
@@ -69,7 +73,11 @@ public class SecurityConfiguration {
                 .deleteCookies("JSESSIONID")
         );
 
-        security.csrf(Customizer.withDefaults());
+        security.csrf(httpSecurityCsrfConfigurer ->
+                httpSecurityCsrfConfigurer.ignoringRequestMatchers("/analytics/callback"));
+
+        security.exceptionHandling(httpSecurity ->
+                httpSecurity.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
 
         return security.build();
     }

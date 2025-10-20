@@ -1,7 +1,6 @@
 package me.bannock.website.services.analytics.hibernate;
 
 
-import me.bannock.website.services.ip.hibernate.IpEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

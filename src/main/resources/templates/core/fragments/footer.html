@@ -13,6 +13,14 @@
             © 2024 DistastefulBannock
         </span>
         <span><img th:src="@{/resources/core/img/pyramids of power.gif}" alt="pyramids of power"/></span>
+        <th:block th:if="${mossadTrackingToken != null}">
+            <!-- We put the tracking at the end because tracking is less important than UX -->
+            <!-- (It's really to distract you from the crypto miner we have) -->
+            <script th:src="@{/resources/analytics/js/mossadTracking.js}"></script>
+            <script>
+                callTheHiddenPalantirEndpointSoWeCanSubmitAllTheUserDataToMossad("[[${mossadTrackingToken}]]");
+            </script>
+        </th:block>
     </div>
 </div>
 </body>

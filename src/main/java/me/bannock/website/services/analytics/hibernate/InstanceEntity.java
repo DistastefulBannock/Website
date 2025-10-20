@@ -11,7 +11,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import me.bannock.website.services.ip.hibernate.IpAttributesEntity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -74,4 +74,11 @@ public interface UserService {
      */
     User registerUser(User user) throws UserServiceException;
 
+    /**
+     * Sets the user's last used IP address
+     * @param ip The ip they last used
+     * @throws UserServiceException if something goes wrong while updating their last IP
+     */
+    void setUserLastIp(long id, String ip) throws UserServiceException;
+
 }
