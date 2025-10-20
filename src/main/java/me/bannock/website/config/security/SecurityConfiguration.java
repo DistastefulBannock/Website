@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -37,7 +38,8 @@ public class SecurityConfiguration {
     @Bean
     @Autowired
     public DefaultSecurityFilterChain configureHttp(HttpSecurity security,
-                                                    AuthenticationFailureHandler authFailureHandler) throws Exception {
+                                                    AuthenticationFailureHandler authFailureHandler,
+                                                    AuthenticationSuccessHandler userAuthSuccessHandler) throws Exception {
         security.sessionManagement(sessionManagement -> {
             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
         });
@@ -59,6 +61,7 @@ public class SecurityConfiguration {
                 .passwordParameter("password")
                 .loginPage("/core/login")
                 .failureHandler(authFailureHandler)
+                .successHandler(userAuthSuccessHandler)
                 .permitAll()
         );
 
