@@ -1,4 +1,29 @@
-@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&display=swap');
+/* dosis-200 - latin_latin-ext */
+@font-face {
+    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'Dosis';
+    font-style: normal;
+    font-weight: 200;
+    src: url('/resources/core/fonts/dosis-v34-latin_latin-ext/dosis-v34-latin_latin-ext-200.eot'); /* IE9 Compat Modes */
+    src: url('/resources/core/fonts/dosis-v34-latin_latin-ext/dosis-v34-latin_latin-ext-200.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('/resources/core/fonts/dosis-v34-latin_latin-ext/dosis-v34-latin_latin-ext-200.woff2') format('woff2'), /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    url('/resources/core/fonts/dosis-v34-latin_latin-ext/dosis-v34-latin_latin-ext-200.woff') format('woff'), /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+, iOS 5+ */
+    url('/resources/core/fonts/dosis-v34-latin_latin-ext/dosis-v34-latin_latin-ext-200.ttf') format('truetype'), /* Chrome 4+, Firefox 3.5+, IE 9+, Safari 3.1+, iOS 4.2+, Android Browser 2.2+ */
+    url('/resources/core/fonts/dosis-v34-latin_latin-ext/dosis-v34-latin_latin-ext-200.svg#Dosis') format('svg'); /* Legacy iOS */
+}
+/* dosis-regular - latin_latin-ext */
+@font-face {
+    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'Dosis';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/resources/core/fonts/dosis-v34-latin_latin-ext/dosis-v34-latin_latin-ext-regular.eot'); /* IE9 Compat Modes */
+    src: url('/resources/core/fonts/dosis-v34-latin_latin-ext/dosis-v34-latin_latin-ext-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('/resources/core/fonts/dosis-v34-latin_latin-ext/dosis-v34-latin_latin-ext-regular.woff2') format('woff2'), /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    url('/resources/core/fonts/dosis-v34-latin_latin-ext/dosis-v34-latin_latin-ext-regular.woff') format('woff'), /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+, iOS 5+ */
+    url('/resources/core/fonts/dosis-v34-latin_latin-ext/dosis-v34-latin_latin-ext-regular.ttf') format('truetype'), /* Chrome 4+, Firefox 3.5+, IE 9+, Safari 3.1+, iOS 4.2+, Android Browser 2.2+ */
+    url('/resources/core/fonts/dosis-v34-latin_latin-ext/dosis-v34-latin_latin-ext-regular.svg#Dosis') format('svg'); /* Legacy iOS */
+}
 
 #headerImage{
     -webkit-touch-callout: none;
