@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "core_ip_threat_score_attributes", indexes = {
+        @Index(columnList = "attribute_id", unique = true),
         @Index(columnList = "score_id")
 })
 public class IpAttributesEntity {

@@ -10,8 +10,10 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -74,17 +76,18 @@ public class IpqsThreatScoreServiceImpl implements IpThreatScoreService {
                 logger.warn("Failed to log attribute, name={}", name, e);
             }
         }
-        ipRepository.saveAndFlush(newIpEntity);
+        newIpEntity = ipRepository.saveAndFlush(newIpEntity);
 
         return threatScore;
     }
 
     @Override
+    @Transactional
     public int getThreatScore(String ip) {
         Objects.requireNonNull(ip);
 
         Optional<IpEntity> cacheThreatScore = ipRepository
-                .getIpEntityByIpEqualsAndMillisExpireGreaterThanEqual(ip, System.currentTimeMillis());
+                .getIpEntityByIpEqualsAndMillisExpiredGreaterThanEqual(ip, System.currentTimeMillis());
         int threatScore = -1;
         if (cacheThreatScore.isEmpty()){
             threatScore = calculateThreatScore(ip);
@@ -96,8 +99,21 @@ public class IpqsThreatScoreServiceImpl implements IpThreatScoreService {
     }
 
     @Override
-    public Map<String, String> getIpAttributes() {
-        return Map.of();
+    @Transactional
+    public Map<String, String> getIpAttributes(String ip) {
+        Objects.requireNonNull(ip);
+        Optional<IpEntity> cacheThreatScore = ipRepository.getIpEntityByIpEqualsAndMillisExpiredGreaterThanEqual(
+                ip, System.currentTimeMillis());
+        if (cacheThreatScore.isEmpty()){
+            getThreatScore(ip);
+            cacheThreatScore = ipRepository.getIpEntityByIpEqualsAndMillisExpiredGreaterThanEqual(
+                    ip, System.currentTimeMillis());
+        }
+        Map<String, String> attributes = new HashMap<>();
+        for (IpAttributesEntity attributesEntity : cacheThreatScore.get().getAttributes()){
+            attributes.put(attributesEntity.getName(), attributesEntity.getValue());
+        }
+        return attributes;
     }
 
 }

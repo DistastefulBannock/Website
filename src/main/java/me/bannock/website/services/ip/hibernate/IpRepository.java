@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface IpRepository extends JpaRepository<IpEntity, Long> {
 
-    Optional<IpEntity> getIpEntityByIpEqualsAndMillisExpireGreaterThanEqual(String ip, long millisExpired);
+    Optional<IpEntity> getIpEntityByIpEqualsAndMillisExpiredGreaterThanEqual(String ip, long millisExpired);
 
 }

@@ -16,8 +16,9 @@ public interface IpThreatScoreService {
     int getThreatScore(String ip);
 
     /**
+     * @param ip The ip to get the attributes for
      * @return Whatever information the ip rating service provides
      */
-    Map<String, String> getIpAttributes();
+    Map<String, String> getIpAttributes(String ip);
 
 }

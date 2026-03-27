@@ -3,6 +3,7 @@ package me.bannock.website.services.ip.hibernate;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
@@ -18,16 +19,16 @@ import java.util.Objects;
 @Entity
 @Table(name = "core_ip_threat_scores", indexes = {
         @Index(columnList = "score_id", unique = true),
-        @Index(columnList = "ip, millis_expire")
+        @Index(columnList = "ip, millis_expired")
 })
 public class IpEntity {
 
     public IpEntity(){}
 
-    public IpEntity(String ip, long threatExpirationMillis, int threatScore){
+    public IpEntity(String ip, long scoreExpirationMillis, int threatScore){
         Objects.requireNonNull(ip);
         this.ip = ip;
-        this.millisExpire = System.currentTimeMillis() + threatExpirationMillis;
+        this.millisExpired = System.currentTimeMillis() + scoreExpirationMillis;
         this.millisScanned = System.currentTimeMillis();
         this.threatScore = threatScore;
     }
@@ -42,8 +43,8 @@ public class IpEntity {
     @Column(name = "ip", length = 45, nullable = false)
     private String ip;
 
-    @Column(name = "millis_expire", nullable = false)
-    private long millisExpire;
+    @Column(name = "millis_expired", nullable = false)
+    private long millisExpired;
 
     @Column(name = "millis_scanned", nullable = false)
     private long millisScanned;
@@ -51,7 +52,7 @@ public class IpEntity {
     @Column(name = "score", nullable = false)
     private int threatScore;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "score_id")
     private List<IpAttributesEntity> attributes;
 
@@ -63,8 +64,8 @@ public class IpEntity {
         return ip;
     }
 
-    public long getMillisExpire() {
-        return millisExpire;
+    public long getMillisExpired() {
+        return millisExpired;
     }
 
     public long getMillisScanned() {
@@ -77,7 +78,7 @@ public class IpEntity {
 
     public List<IpAttributesEntity> getAttributes() {
         if (attributes == null)
-            attributes = new ArrayList<>();
+            this.attributes = new ArrayList<>();
         return attributes;
     }
 
