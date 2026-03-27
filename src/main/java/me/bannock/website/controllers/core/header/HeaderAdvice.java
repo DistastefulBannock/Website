@@ -1,4 +1,4 @@
-package me.bannock.website.models.header;
+package me.bannock.website.controllers.core.header;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

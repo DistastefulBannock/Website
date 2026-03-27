@@ -10,7 +10,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "analytics_instances_details", indexes = {
-        @Index(columnList = "detail_id")
+        @Index(columnList = "detail_id"),
+        @Index(columnList = "instance_id")
 })
 public class InstanceDetailEntity {
 

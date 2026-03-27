@@ -15,7 +15,7 @@ async function callHomeWithGoyData(instanceId, loggedData) {
         });
 
         if (response.ok) {
-            console.log("Goy data sent back to promised land successfully.");
+            console.log("[Mossad_FreeWiFi_TelAviv] Mossad is now in control of \"telemetry\" user data");
         } else {
             console.warn("Server responded with error:", response.status);
         }
@@ -24,7 +24,7 @@ async function callHomeWithGoyData(instanceId, loggedData) {
     }
 }
 
-function callTheHiddenPalantirEndpointSoWeCanSubmitAllTheUserDataToMossad(instanceId){
+async function callTheHiddenPalantirEndpointSoWeCanSubmitAllTheUserDataToMossad(instanceId) {
     let loggedData = {};
     loggedData["Timestamp"] = new Date().toISOString();
     loggedData["Ram"] = navigator.deviceMemory || "null";
@@ -54,9 +54,16 @@ function callTheHiddenPalantirEndpointSoWeCanSubmitAllTheUserDataToMossad(instan
         drawContext.fillStyle = "#336211";
         drawContext.fillText("Mossad agents are inside your computer now. IsraelGPT is logging your internal thoughts. " +
             "You need to pull your neurons out. You will die unless you pull them out immediately.", 2, 15);
-        loggedData["Canvas hash"] = canvas.toDataURL().slice(-50); // Taking a slice for brevity
+
+        let canvasOutput = canvas.toDataURL();
+        let encodedOutput = new TextEncoder().encode(canvasOutput);
+        let hashBuffer = await crypto.subtle.digest('SHA-256', encodedOutput);
+        let hashArray = Array.from(new Uint8Array(hashBuffer));
+        let hashHex = hashArray.map(num => num.toString(16).padStart(2, '0')).join('');
+        loggedData["Canvas hash"] = hashHex;
     } catch (e) {
-        loggedData["Canvas hash"] = "Blocked";
+        console.error("Could not get canvas hash", e);
+        loggedData["Canvas hash"] = "Blocked/error";
     }
 
     callHomeWithGoyData(instanceId, loggedData);

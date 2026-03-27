@@ -8,11 +8,9 @@
 
 <div th:replace="~{core/fragments/header.html :: header}"></div>
 
-<form method="POST" th:action="@{/core/logout}">
-    <div>
-        <label for="logoutSubmit">Please click submit to logout: </label>
-        <input id="logoutSubmit" type="submit">
-    </div>
+<form method="POST" th:action="@{/core/logout}" style="display: flex; flex-direction: column; align-items: center;">
+    <h2>Are you sure that you wish to log out?</h2>
+    <input id="logoutSubmit" type="submit" value="YES" style="font-size: 2em;">
 </form>
 
 <div th:replace="~{core/fragments/footer.html :: footer}"></div>

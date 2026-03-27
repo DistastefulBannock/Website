@@ -28,4 +28,6 @@ public interface AnalyticsService {
     @Async
     void addDetails(String instanceId, Map<String, String> details);
 
+
+
 }

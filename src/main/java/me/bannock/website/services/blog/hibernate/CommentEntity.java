@@ -42,7 +42,7 @@ public class CommentEntity {
     @Column(name = "millis_posted")
     private long millisPosted;
 
-    @Column(name = "content")
+    @Column(name = "content", length = 1024)
     private String content;
 
     @Column(name = "deleted")
