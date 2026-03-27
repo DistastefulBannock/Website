@@ -32,7 +32,7 @@ public class HibernateAnalyticsServiceImpl implements AnalyticsService {
     private final InstanceRepository instanceRepository;
     private final IpThreatScoreService ipThreatScoreService;
 
-    @Value("${bannock.analytics.idHashSale}")
+    @Value("${bannock.analytics.idHashSalt}")
     public String instanceIdHashSalt;
 
     @Override
