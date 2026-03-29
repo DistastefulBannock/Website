@@ -10,7 +10,7 @@
         <area target="" alt="Home" title="Home" href="/core/" coords="249, 166, 4, 122" shape="rect">
         <th:block th:each="link : ${headerLinksToPositions.keySet()}">
             <area target="" th:alt="${link.getDisplayText()}" th:title="${link.getDisplayText()}" th:href="${link.getRedirect()}"
-                  th:coords="${headerLinksToPositions.get(link)[0]} + ',' + ${headerLinksToPositions.get(link)[1]} + ',' + ${headerLinksToPositions.get(link)[0] + link.getWidth()} + ',' + ${headerLinksToPositions.get(link)[1] + link.getHeight()}" shape="rect">
+                  th:coords="${headerLinksToPositions.get(link)[0]} + ',' + ${headerLinksToPositions.get(link)[1] + 8} + ',' + ${headerLinksToPositions.get(link)[0] + link.getWidth()} + ',' + ${headerLinksToPositions.get(link)[1] + link.getHeight()}" shape="rect">
         </th:block>
     </map>
 
@@ -19,7 +19,8 @@
         <!-- offset with the left and top vars -->
         <!-- Get the size with Chrome dev tools(ceil) and create area on #headerMap; adjust as needed -->
         <th:block th:each="link : ${headerLinksToPositions.keySet()}">
-            <p class="fakeImageMapText" th:text="${link.getDisplayText()}" th:style="'left: ' + ${headerLinksToPositions.get(link)[0]} + 'px; top: ' + ${headerLinksToPositions.get(link)[1]} + 'px;'">Login</p>
+            <p class="fakeImageMapText" th:text="${link.getDisplayText()}"
+               th:style="'left: ' + ${headerLinksToPositions.get(link)[0]} + 'px; top: ' + ${headerLinksToPositions.get(link)[1]} + 'px;'">Login</p>
         </th:block>
     </div>
 </header>
