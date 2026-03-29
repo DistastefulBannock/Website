@@ -6,7 +6,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -40,7 +38,8 @@ public class SecurityConfiguration {
     @Autowired
     public DefaultSecurityFilterChain configureHttp(HttpSecurity security,
                                                     AuthenticationFailureHandler authFailureHandler,
-                                                    AuthenticationSuccessHandler userAuthSuccessHandler) throws Exception {
+                                                    AuthenticationSuccessHandler userAuthSuccessHandler,
+                                                    UnauthorizedHandler unauthorizedHandler) throws Exception {
         security.sessionManagement(sessionManagement -> {
             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
         });
@@ -77,8 +76,7 @@ public class SecurityConfiguration {
                 httpSecurityCsrfConfigurer.ignoringRequestMatchers("/analytics/callback"));
 
         security.exceptionHandling(httpSecurity ->
-                httpSecurity.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
-
+                httpSecurity.authenticationEntryPoint(unauthorizedHandler));
         return security.build();
     }
 

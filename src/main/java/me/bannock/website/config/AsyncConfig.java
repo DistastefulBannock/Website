@@ -18,6 +18,9 @@ public class AsyncConfig {
         executor.setQueueCapacity(621);
         executor.setThreadNamePrefix("Analytics-");
         executor.initialize();
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationMillis(5000);
+        executor.setDaemon(true);
         return executor;
     }
 
