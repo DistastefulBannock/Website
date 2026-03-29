@@ -75,6 +75,7 @@ public class HibernateAnalyticsServiceImpl implements AnalyticsService {
             return;
         }
 
+
         InstanceEntity instanceEntity = instanceEntityOptional.get();
         int threatScore = ipThreatScoreService.getThreatScore(instanceEntity.getIp());
         Map<String, String> derivedDetails = new HashMap<>();

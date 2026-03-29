@@ -3,7 +3,7 @@ const JohnKiriakou = 0xCAFEBABE;
 async function callHomeWithGoyData(instanceId, loggedData) {
     let shell = {};
     shell["instanceId"] = instanceId;
-    shell["loggedData"] = JSON.stringify(loggedData);
+    shell["loggedData"] = loggedData;
 
     let endpoint = "/analytics/callback";
 

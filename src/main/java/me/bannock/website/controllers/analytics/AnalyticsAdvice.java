@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class AnalyticsAdvice {
     private boolean useCloudflareIpHeaderWhenAvailable;
 
     @ModelAttribute("mossadTrackingToken")
-    public String getAnalyticsInstance(HttpServletRequest request){
+    public String getAnalyticsInstance(HttpServletRequest request, @RequestHeader(value = "User-Agent") String userAgent){
         if (request.getRequestURI().equalsIgnoreCase("/analytics/callback")){
             return null;
         }
@@ -43,6 +44,8 @@ public class AnalyticsAdvice {
         requestData.put("Path", request.getRequestURI());
         requestData.put("Method", request.getMethod());
         requestData.put("Initial request timestamp", new Date(System.currentTimeMillis()).toString());
+        if (userAgent != null)
+            requestData.put("User agent", userAgent);
 
         return analyticsService.createInstance(remoteIp, requestData);
     }
