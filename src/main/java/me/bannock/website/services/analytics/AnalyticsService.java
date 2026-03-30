@@ -25,7 +25,6 @@ public interface AnalyticsService {
      * @param instanceId The analytics instance id
      * @param details The details to add to this instance
      */
-    @Async
     void addDetails(String instanceId, Map<String, String> details);
 
 

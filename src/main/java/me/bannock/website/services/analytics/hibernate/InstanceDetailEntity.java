@@ -2,9 +2,12 @@ package me.bannock.website.services.analytics.hibernate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
@@ -34,6 +37,13 @@ public class InstanceDetailEntity {
             sequenceName = "analytics_instances_details_seq", initialValue = 0, allocationSize = 1)
     private long detailId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "instance_id", insertable = false, updatable = false)
+    private InstanceEntity instance;
+
+    @Column(name = "instance_id", insertable = false, updatable = false)
+    private long instanceId;
+
     @Column(name = "name")
     private String name;
 
@@ -42,6 +52,10 @@ public class InstanceDetailEntity {
 
     public long getDetailId() {
         return detailId;
+    }
+
+    public InstanceEntity getInstance() {
+        return instance;
     }
 
     public String getName() {

@@ -29,8 +29,13 @@ public class AnalyticsController {
             logger.warn("Received analytic callback request without instance id");
             return ResponseEntity.badRequest().build();
         }
-        analyticsService.scanIp(instanceId);
+        if (loggedData.getLoggedData().size() > 20) {
+            logger.warn("Received analytic callback request with larger than normal detail payload, " +
+                    "size={}, expectedSize=13, maxSize=20", loggedData.getLoggedData().size());
+            return ResponseEntity.badRequest().build();
+        }
         analyticsService.addDetails(instanceId, loggedData.getLoggedData());
+        analyticsService.scanIp(instanceId);
 
         return ResponseEntity.ok().build();
     }

@@ -2,6 +2,7 @@ package me.bannock.website.services.analytics.hibernate;
 
 import me.bannock.website.services.analytics.AnalyticsService;
 import me.bannock.website.services.ip.IpThreatScoreService;
+import me.bannock.website.services.webhooks.WebhookService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,14 +27,21 @@ import java.util.Optional;
 public class HibernateAnalyticsServiceImpl implements AnalyticsService {
 
     @Autowired
-    public HibernateAnalyticsServiceImpl(InstanceRepository instanceRepository, IpThreatScoreService ipThreatScoreService){
+    public HibernateAnalyticsServiceImpl(InstanceRepository instanceRepository,
+                                         InstanceDetailRepository instanceDetailRepository,
+                                         IpThreatScoreService ipThreatScoreService,
+                                         WebhookService webhookService){
         this.instanceRepository = instanceRepository;
+        this.instanceDetailRepository = instanceDetailRepository;
         this.ipThreatScoreService = ipThreatScoreService;
+        this.webhookService = webhookService;
     }
 
     private final Logger logger = LogManager.getLogger();
     private final InstanceRepository instanceRepository;
+    private final InstanceDetailRepository instanceDetailRepository;
     private final IpThreatScoreService ipThreatScoreService;
+    private final WebhookService webhookService;
 
     @Value("${bannock.analytics.idHashSalt}")
     public String instanceIdHashSalt;
@@ -75,7 +86,6 @@ public class HibernateAnalyticsServiceImpl implements AnalyticsService {
             return;
         }
 
-
         InstanceEntity instanceEntity = instanceEntityOptional.get();
         int threatScore = ipThreatScoreService.getThreatScore(instanceEntity.getIp());
         Map<String, String> derivedDetails = new HashMap<>();
@@ -87,6 +97,37 @@ public class HibernateAnalyticsServiceImpl implements AnalyticsService {
             instanceEntity.getDetails().add(new InstanceDetailEntity(id, derivedDetails.get(id)));
         }
         instanceEntity = instanceRepository.saveAndFlush(instanceEntity);
+
+        Optional<InstanceDetailEntity> pathDetail = instanceDetailRepository.findInstanceDetailEntityByInstanceIdAndAndName(
+                instanceEntity.getInstanceId(), "Path");
+        if (pathDetail.isPresent() && pathDetail.get().getValue().equals("/about/")){
+            Map<String, String> loggedDetails = new LinkedHashMap<>();
+            loggedDetails.put("IP", instanceEntity.getIp());
+
+            HashSet<String> detailsToInclude = new HashSet<>();
+            detailsToInclude.addAll(Arrays.asList("Path", "Display width", "Display height", "User agent",
+                    "Canvas hash", "Language", "Timezone", "Platform"));
+            for (InstanceDetailEntity details : instanceEntity.getDetails()){
+                if (!detailsToInclude.contains(details.getName()))
+                    continue;
+                loggedDetails.put(details.getName(), details.getValue());
+                detailsToInclude.remove(details.getName());
+                if (detailsToInclude.isEmpty())
+                    break;
+            }
+
+            loggedDetails.putAll(derivedDetails);
+
+            Map<String, String> ipAttributes = ipThreatScoreService.getIpAttributes(instanceEntity.getIp());
+            for (String key : new String[]{"region", "city", "timezone", "latitude", "longitude", "fraud_score",
+                    "zip_code", "ISP", "organization"}){
+                if (!ipAttributes.containsKey(key))
+                    continue;
+                loggedDetails.put(key, ipAttributes.get(key));
+            }
+
+            webhookService.sendNotification("About page request", "asdf", loggedDetails);
+        }
     }
 
     @Override
