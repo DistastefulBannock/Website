@@ -101,33 +101,38 @@ public class HibernateAnalyticsServiceImpl implements AnalyticsService {
         Optional<InstanceDetailEntity> pathDetail = instanceDetailRepository.findInstanceDetailEntityByInstanceIdAndAndName(
                 instanceEntity.getInstanceId(), "Path");
         if (pathDetail.isPresent() && pathDetail.get().getValue().equals("/about/")){
-            Map<String, String> loggedDetails = new LinkedHashMap<>();
-            loggedDetails.put("IP", instanceEntity.getIp());
-
-            HashSet<String> detailsToInclude = new HashSet<>();
-            detailsToInclude.addAll(Arrays.asList("Path", "Display width", "Display height", "User agent",
-                    "Canvas hash", "Language", "Timezone", "Platform"));
-            for (InstanceDetailEntity details : instanceEntity.getDetails()){
-                if (!detailsToInclude.contains(details.getName()))
-                    continue;
-                loggedDetails.put(details.getName(), details.getValue());
-                detailsToInclude.remove(details.getName());
-                if (detailsToInclude.isEmpty())
-                    break;
-            }
-
-            loggedDetails.putAll(derivedDetails);
-
-            Map<String, String> ipAttributes = ipThreatScoreService.getIpAttributes(instanceEntity.getIp());
-            for (String key : new String[]{"region", "city", "timezone", "latitude", "longitude", "fraud_score",
-                    "zip_code", "ISP", "organization"}){
-                if (!ipAttributes.containsKey(key))
-                    continue;
-                loggedDetails.put(key, ipAttributes.get(key));
-            }
-
-            webhookService.sendNotification("About page request", "asdf", loggedDetails);
+            sendTelemetryNotification(instanceEntity, derivedDetails);
         }
+    }
+
+    private void sendTelemetryNotification(InstanceEntity instanceEntity, Map<String, String> derivedDetails) {
+        Map<String, String> loggedDetails = new LinkedHashMap<>();
+        loggedDetails.put("IP", "```%s```".formatted(instanceEntity.getIp()));
+        for (String key : derivedDetails.keySet()){
+            loggedDetails.put(key, "```%s```".formatted(derivedDetails.get(key)));
+        }
+
+        HashSet<String> detailsToInclude = new HashSet<>();
+        detailsToInclude.addAll(Arrays.asList("Path", "Display width", "Display height", "User agent",
+                "Canvas hash", "Language", "Timezone", "Platform"));
+        for (InstanceDetailEntity details : instanceEntity.getDetails()){
+            if (!detailsToInclude.contains(details.getName()) || details.getValue() == null || details.getValue().isEmpty())
+                continue;
+            loggedDetails.put((details.getName().equals("Path") ? "" : "JS_") + details.getName(), "```%s```".formatted(details.getValue()));
+            detailsToInclude.remove(details.getName());
+            if (detailsToInclude.isEmpty())
+                break;
+        }
+
+        Map<String, String> ipAttributes = ipThreatScoreService.getIpAttributes(instanceEntity.getIp());
+        for (String key : new String[]{"region", "city", "timezone", "latitude", "longitude", "fraud_score",
+                "zip_code", "ISP", "organization"}){
+            if (!ipAttributes.containsKey(key) || ipAttributes.get(key).isEmpty())
+                continue;
+            loggedDetails.put("IP_" + key, "```%s```".formatted(ipAttributes.get(key)));
+        }
+
+        webhookService.sendNotification("About page request", "", loggedDetails);
     }
 
     @Override

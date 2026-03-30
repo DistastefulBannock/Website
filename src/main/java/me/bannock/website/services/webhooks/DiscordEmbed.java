@@ -10,6 +10,7 @@ public class DiscordEmbed {
 
     private String title, type = "rich", description, url;
     private DiscordField[] fields;
+    private int color = 0xEB9300;
 
     public String getTitle() {
         return title;
@@ -49,6 +50,14 @@ public class DiscordEmbed {
 
     public void setFields(DiscordField[] fields) {
         this.fields = fields;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 
 }
