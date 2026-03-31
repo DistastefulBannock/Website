@@ -113,12 +113,13 @@ public class HibernateAnalyticsServiceImpl implements AnalyticsService {
         }
 
         HashSet<String> detailsToInclude = new HashSet<>();
-        detailsToInclude.addAll(Arrays.asList("Path", "Display width", "Display height", "User agent",
-                "Canvas hash", "Language", "Timezone", "Platform"));
+        detailsToInclude.addAll(Arrays.asList("Path", "Referer", "Display width", "Display height", "User agent",
+                "Canvas hash", "Language", "Timezone", "Platform", "Do not track header"));
         for (InstanceDetailEntity details : instanceEntity.getDetails()){
             if (!detailsToInclude.contains(details.getName()) || details.getValue() == null || details.getValue().isEmpty())
                 continue;
-            loggedDetails.put((details.getName().equals("Path") ? "" : "JS_") + details.getName(), "```%s```".formatted(details.getValue()));
+            boolean useJSNamePrefix = !details.getName().equals("Path") && !details.getName().equals("Referer");
+            loggedDetails.put((useJSNamePrefix ? "JS_" : "") + details.getName(), "```%s```".formatted(details.getValue()));
             detailsToInclude.remove(details.getName());
             if (detailsToInclude.isEmpty())
                 break;

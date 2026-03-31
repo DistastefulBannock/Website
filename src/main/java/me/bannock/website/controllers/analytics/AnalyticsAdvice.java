@@ -30,7 +30,9 @@ public class AnalyticsAdvice {
     private boolean useCloudflareIpHeaderWhenAvailable;
 
     @ModelAttribute("mossadTrackingToken")
-    public String getAnalyticsInstance(HttpServletRequest request, @RequestHeader(value = "User-Agent") String userAgent){
+    public String getAnalyticsInstance(HttpServletRequest request,
+                                       @RequestHeader(value = "User-Agent", required = false) String userAgent,
+                                       @RequestHeader(value = "Referer", required = false) String referer){
         if (request.getRequestURI().equalsIgnoreCase("/analytics/callback")){
             return null;
         }
@@ -46,6 +48,7 @@ public class AnalyticsAdvice {
         requestData.put("Initial request timestamp", new Date(System.currentTimeMillis()).toString());
         if (userAgent != null)
             requestData.put("User agent", userAgent);
+        requestData.put("Referer", referer == null ? "null/direct request" : referer);
 
         return analyticsService.createInstance(remoteIp, requestData);
     }
