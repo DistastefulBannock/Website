@@ -21,6 +21,10 @@ public class InstanceDetailEntity {
     public InstanceDetailEntity(){}
 
     public InstanceDetailEntity(String name, String value){
+        if (name == null)
+            name = "";
+        if (value == null)
+            value = "";
         if (name.length() > 255)
             name = name.substring(0, 255);
         this.name = name;
