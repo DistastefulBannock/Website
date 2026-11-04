@@ -6,6 +6,7 @@ import me.bannock.website.services.blog.BlogServiceException;
 import me.bannock.website.services.blog.Comment;
 import me.bannock.website.services.blog.Post;
 import me.bannock.website.services.storage.StorageService;
+import me.bannock.website.services.webhooks.WebhookService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.io.InputStream;
 import java.io.LineNumberReader;
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,10 +31,11 @@ public class HibernateBlogServiceImpl implements BlogService {
 
     @Autowired
     public HibernateBlogServiceImpl(StorageService storageService, PostRepository postRepository,
-                                    CommentRepository commentRepository){
+                                    CommentRepository commentRepository, WebhookService webhookService){
         this.storageService = storageService;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
+        this.webhookService = webhookService;
     }
 
     private final Logger logger = LogManager.getLogger();
@@ -40,6 +43,7 @@ public class HibernateBlogServiceImpl implements BlogService {
     private final StorageService storageService;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final WebhookService webhookService;
 
     @Value("${bannock.hibernateBlog.persistOriginalFileNames}")
     private boolean persistOriginalFileNames;
@@ -177,6 +181,13 @@ public class HibernateBlogServiceImpl implements BlogService {
             logger.info("User could not post comment because comment posting is disabled, " +
                             "postId={}, commentAuthorId={}, content(log formatted)={}",
                     postId, commentAuthorId, getCommentLogContent(content));
+            throw new BlogServiceException("Commenting is currently disabled");
+        }
+        if (content == null){
+            logger.warn("User made malformed comment request, " +
+                            "postId={}, commentAuthorId={}, content=null",
+                    postId, commentAuthorId);
+            throw new BlogServiceException("Comment must contain content");
         }
         if (content.length() > maxCommentContentSize){
             logger.info("User attempted to make comment larger than {}, " +
@@ -208,8 +219,19 @@ public class HibernateBlogServiceImpl implements BlogService {
 
         CommentEntity comment = new CommentEntity(postId, commentAuthorId, System.currentTimeMillis(), content, commentAuthorIp);
         commentRepository.save(comment);
-        logger.info("User make comment on post, authorId={}, postId={}, content(log formatted)={}",
+        logger.info("User made comment on post, authorId={}, postId={}, content(log formatted)={}",
                 commentAuthorId, postId, getCommentLogContent(content));
+        HashMap<String, String> metadata = new HashMap<>();
+        metadata.put("comment", comment.getContent());
+        metadata.put("postId", comment.getPostId() + "");
+        metadata.put("authorId", comment.getAuthorId() + "");
+        metadata.put("authorIp", comment.getOriginalAuthorIp());
+        for (String key : metadata.keySet()){
+            String value = metadata.get(key);
+            if (value == null || value.isBlank())
+                metadata.replace(key, "null");
+        }
+        webhookService.sendNotification("New comment left", "", metadata);
         return toCommentDto(comment);
     }
 
