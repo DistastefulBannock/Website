@@ -1,7 +1,6 @@
 package me.bannock.website.security;
 
 import me.bannock.website.security.authentication.AuthFailHandlerImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +34,6 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    @Autowired
     public DefaultSecurityFilterChain configureHttp(HttpSecurity security,
                                                     AuthenticationFailureHandler authFailureHandler,
                                                     AuthenticationSuccessHandler userAuthSuccessHandler,
@@ -47,7 +45,7 @@ public class SecurityConfiguration {
         security.authorizeHttpRequests(authManagerRegistry -> authManagerRegistry.requestMatchers(
                 "/", "/core/", "/core/login*", "/core/register*",
                 "/error*", "/resources/**", "/blog/**", "/about/**",
-                ".well-known/acme-challenge/**", "/analytics/callback"
+                "/.well-known/acme-challenge/**", "/analytics/callback"
         ).permitAll().anyRequest().authenticated());
 
         security.anonymous(anonymousConfigurer -> {
